@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.test.client import RequestFactory
+from django.test.client import RequestFactory, Client
 from django.core.urlresolvers import reverse
 
 from apps import initial_data
@@ -9,6 +9,20 @@ from .views import (
     ContactView,
     LogRequestView,
 )
+
+
+FAKE_PATH_LIST = [
+    reverse('requests'),
+    '12747630-426-13!@$*&_*&%!_)&@*$&__!#  *$!@$*_!%)(&#*$&&$)!(#$)(',
+    '/',
+    '/el/',
+    '/www',
+    '1242',
+    '/?d=3',
+    '/?_=23423523',
+    '/avaba-kedabra/',
+    '/****/'
+]
 
 
 class ContactUnitTest(TestCase):
@@ -47,6 +61,15 @@ class LogRequestTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertHTMLEqual(response.template_name[0], self.requests_html)
 
+    def test_by_client_get_10_records_from_db(self):
+        """See results of 10 requests in the page.
+        """
+        (lambda: [self.client.get(path) for path in FAKE_PATH_LIST])()
+        queryset = LogWebRequest.objects.order_by('-id')[:10]
+        response = self.client.get(self.fake_path)
+        self.assertEqual(response.status_code, 200)
+        map(lambda db: self.assertIn(db.path, response.content), queryset)
+
 
 class LogWebRequestMiddlewareTest(TestCase):
     """Test middleware response, and ability to save responses.
@@ -58,20 +81,8 @@ class LogWebRequestMiddlewareTest(TestCase):
         self.lwrm = LogWebReqMiddleware()
 
     def get_req_and_res(self):
-        fake_path_list = [
-            reverse('requests'),
-            reverse('contact', kwargs={'pk': self.pk}),
-            '/',
-            '/el/',
-            '/www',
-            '1242',
-            '/?d=3',
-            '/?_=23423523',
-            '/avaba-kedabra/',
-            '/****/'
-        ]
         fake_actions = []
-        for fake_path in fake_path_list:
+        for fake_path in FAKE_PATH_LIST:
             request = self.factory.get(path=fake_path)
             fake_actions.append(
                 dict(
