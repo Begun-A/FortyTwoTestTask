@@ -36,9 +36,39 @@ class LogRequestTest(TestCase):
         self.fake_path = reverse('requests')
         self.requests_html = 'hello/requests.html'
 
-    def test_requests_get_ok_request(self):
+    def test_requests_get_ok_request_and_check_template(self):
         request = self.factory.get(path=self.fake_path)
         view = LogRequestView.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertHTMLEqual(response.template_name[0], self.requests_html)
+
+
+class LogWebRequestMiddlewareTest(TestCase):
+    """Test middleware response, and ability to save responses.
+    """
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.pk = initial_data[0]['pk']
+        self.lwm = LogWebMiddleware()     
+
+    def test_response_in_lwm_process_response(self):
+        fake_path_list = [
+            reverse('requests'),
+            reverse('contact', kwargs={'pk': self.pk})
+        ]
+        fake_actions = []
+        for fake_path in fake_path_list:
+            request = self.factory.get(path=self.fake_path)
+            fake_actions.append(
+                dict(
+                    request=request,
+                    response=LogRequestView.as_view()(request)
+                )
+            )
+        map(
+            lambda act: self.assertEqual(
+                self.lwm.process_response(act['request'], act['response']), act['response']
+            ), fake_actions
+        )
