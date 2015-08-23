@@ -34,6 +34,8 @@ class ContactIntegrationTest(unittest.TestCase):
         self.driver.quit()
 
     def test_contact_find_data_on_page_and_check_it_with_base(self):
+        """Tests all data on rendered page and check it with database.
+        """
         driver = self.driver
         driver.get(self.absolute_url)
         driver.implicitly_wait(10)
