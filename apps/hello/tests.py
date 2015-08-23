@@ -3,7 +3,8 @@ from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 
 from apps import initial_data
-from .middleware import LogWebMiddleware
+from .middleware import LogWebReqMiddleware
+from .models import LogWebRequest
 from .views import (
     ContactView,
     LogRequestView,
@@ -54,14 +55,21 @@ class LogWebRequestMiddlewareTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.pk = initial_data[0]['pk']
-        self.lwm = LogWebMiddleware()
+        self.lwrm = LogWebReqMiddleware()
+        self.lwr_queryset = LogWebRequest.objects.order_by('-id')[:10]
 
-    def test_response_in_lwm_process_response(self):
-        """Test middleware on response answering.
-        """
+    def get_req_and_res(self):
         fake_path_list = [
             reverse('requests'),
-            reverse('contact', kwargs={'pk': self.pk})
+            reverse('contact', kwargs={'pk': self.pk}),
+            '/',
+            '/el/',
+            '/www',
+            '1242',
+            '/?d=3',
+            '/?_=23423523',
+            '/avaba-kedabra/',
+            '/****/'
         ]
         fake_actions = []
         for fake_path in fake_path_list:
@@ -72,10 +80,50 @@ class LogWebRequestMiddlewareTest(TestCase):
                     response=LogRequestView.as_view()(request)
                 )
             )
+        return fake_actions
+
+    def test_response_in_lwm_process_response(self):
+        """Test middleware on response answering.
+        """
+        fake_actions = self.get_req_and_res()
         map(
-            lambda act: self.assertEqual(
+            lambda income: self.assertEqual(
                 self.lwm.process_response(
-                    act['request'], act['response']
-                ), act['response']
+                    income['request'], income['response']
+                ), income['response']
             ), fake_actions
+        )
+
+    def test_save_of_10_lwm_requests_in_db(self):
+        """Check some values of 10 income requests which must
+        coincide with db stored request data.
+        """
+        fake_actions = self.get_req_and_res()[::-1]
+        map(
+            lambda income, db: self.assertEqual(
+                income['response'].status_code, db.status_code
+            ),
+            fake_actions,
+            self.lwr_queryset
+        )
+        map(
+            lambda income, db: self.assertEqual(
+                income['request'].method, db.method
+            ),
+            fake_actions,
+            self.lwr_queryset
+        )
+        map(
+            lambda income, db: self.assertEqual(
+                income['request'].path, db.path
+            ),
+            fake_actions,
+            self.lwr_queryset
+        )
+        map(
+            lambda income, db: self.assertEqual(
+                income['request'].META['REMOTE_ADDR'], db.remote_addr
+            ),
+            fake_actions,
+            self.lwr_queryset
         )
