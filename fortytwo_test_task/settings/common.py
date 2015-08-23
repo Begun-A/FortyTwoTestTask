@@ -131,6 +131,3 @@ TEMPLATE_DIRS = (
 
 # Turn off south during test
 SOUTH_TESTS_MIGRATE = False
-
-# To switch off test database for selenium purposes
-TEST_RUNNER = 'hello.NoDbTestRunner'

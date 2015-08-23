@@ -5,14 +5,13 @@ from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 
 from selenium import webdriver
-
-from .models import Contact
 from .views import ContactView
 
 
-with open(os.path \
-    .join(
-        os.path.dirname(os.path.abspath(__file__)), 'fixtures/initial_data.json'
+with open(
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'fixtures/initial_data.json'
     )
 ) as test_data:
     data = json.load(test_data)

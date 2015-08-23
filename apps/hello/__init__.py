@@ -11,3 +11,7 @@ class NoDbTestRunner(DjangoTestSuiteRunner):
     def teardown_databases(self, old_config, **kwargs):
         """ Override the database teardown defined in parent class """
         pass
+
+
+# To switch off test database for selenium purposes
+TEST_RUNNER = 'hello.NoDbTestRunner'
