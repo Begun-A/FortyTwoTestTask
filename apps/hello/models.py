@@ -21,6 +21,7 @@ class LogWebRequest(models.Model):
         db_table = 'LogWebRequest'
 
     method = models.CharField(max_length=16)
-    path = models.CharField(max_length=255)
+    path = models.CharField(max_length=1000)
     status_code = models.IntegerField()
     remote_addr = models.IPAddressField()
+    time = models.DateTimeField(auto_now=True)

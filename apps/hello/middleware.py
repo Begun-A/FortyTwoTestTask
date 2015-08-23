@@ -4,6 +4,7 @@ from .models import LogWebRequest
 class LogWebReqMiddleware(object):
 
     def process_response(self, request, response):
+
         LogWebRequest(
             method=request.method,
             path=request.path,

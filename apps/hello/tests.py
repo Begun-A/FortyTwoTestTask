@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.test.client import RequestFactory, Client
+from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 
 from apps import initial_data
@@ -68,7 +68,7 @@ class LogRequestTest(TestCase):
         queryset = LogWebRequest.objects.order_by('-id')[:10]
         response = self.client.get(self.fake_path)
         self.assertEqual(response.status_code, 200)
-        map(lambda db: self.assertIn(db.path, response.content), queryset)
+        map(lambda db: self.assertIn(str(db.path), response.content), queryset)
 
 
 class LogWebRequestMiddlewareTest(TestCase):

@@ -1,5 +1,5 @@
-from django.views.generic import DetailView, TemplateView
-from .models import Contact
+from django.views.generic import DetailView, ListView
+from .models import Contact, LogWebRequest
 
 
 class ContactView(DetailView):
@@ -8,6 +8,8 @@ class ContactView(DetailView):
     model = Contact
 
 
-class LogRequestView(TemplateView):
+class LogRequestView(ListView):
 
     template_name = 'hello/requests.html'
+    queryset = LogWebRequest.objects.order_by('-id')[:10]
+    context_object_name = 'log_requests'
