@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.views.generic import DetailView
+from .models import Contact
 
-# Create your views here.
+
+class ContactView(DetailView):
+
+    template_name = 'hello/contact.html'
+    model = Contact
