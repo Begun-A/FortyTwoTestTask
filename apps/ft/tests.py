@@ -1,10 +1,8 @@
 import unittest
-import json
-import ipdb
+import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from django.core.urlresolvers import reverse
-from django.core import serializers
 
 from apps import TEST_DATA, FAKE_PATH_LIST
 from apps import initial_data
@@ -116,15 +114,19 @@ class LogWebRequestIntegrationTest(unittest.TestCase):
             # return back, see if we get new result
             body = driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + Keys.F4)
-            first_row = driver.find_element_by_xpath('//tr[2]').text
-            last_rec = LogWebRequest.objects.order_by('-id')[0]
-            rec_values = [
-                record for record in json.loads(
-                    serializers.serialize('json', [last_rec])
-                )[0]['fields'].values()
+
+            queryset = LogWebRequest.objects.order_by('-id')[0]
+            last_rec = [
+                each.value_from_object(queryset)
+                for each in queryset._meta.fields
             ]
-            ipdb.set_trace()
-            map(lambda rec: self.assertIn(unicode(rec), first_row), rec_values)
+            driver.refresh()
+            first_row = self.driver.find_elements_by_tag_name('tr')[1].text
+            map(
+                lambda row: self.assertIn(
+                    unicode(row), first_row
+                ), last_rec[:3]
+            )
 
     def test_title_of_3_req(self):
         """Test 3 requests and check title if it changed.
@@ -134,18 +136,23 @@ class LogWebRequestIntegrationTest(unittest.TestCase):
         driver.implicitly_wait(10)
 
         init_title = driver.title
-
-        for fake_path in FAKE_PATH_LIST[:2]:
+        depth = 0
+        for fake_path in FAKE_PATH_LIST[:3]:
             # step on another tab in browser
             body = driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + 't')
             # go to this link
             url = self.uri + fake_path
+            # ipdb.set_trace()
             driver.get(url)
             driver.implicitly_wait(10)
-
+            depth = depth + 1
         # return back, see if we get new result
-        body = driver.find_element_by_tag_name('body')
-        body.send_keys(Keys.CONTROL + Keys.F4)
-        self.assertNotEqual(init_title, driver.title)
-        self.assertEqual(driver.title, "3 new requests")
+        time.sleep(1)
+        for d in xrange(depth):
+            body = driver.find_element_by_tag_name('body')
+            body.send_keys(Keys.CONTROL + Keys.F4)
+        # ipdb.set_trace()
+        new_title = driver.title
+        self.assertNotEqual(init_title, new_title)
+        self.assertEqual(new_title, "3 new requests")

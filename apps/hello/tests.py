@@ -1,4 +1,3 @@
-import ipdb
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
@@ -104,6 +103,7 @@ class LogWebRequestMiddlewareTest(TestCase):
         fake_actions = self.get_req_and_res()[::-1]
         # get saved income req and res
         lwr_queryset = LogWebRequest.objects.order_by('-id')[:10]
+
         map(
             lambda income, db: self.assertEqual(
                 income['response'].status_code, db.status_code
