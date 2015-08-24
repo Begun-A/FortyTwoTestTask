@@ -1,28 +1,15 @@
+import ipdb
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 
-from apps import initial_data
+from apps import initial_data, FAKE_PATH_LIST
 from .middleware import LogWebReqMiddleware
 from .models import LogWebRequest
 from .views import (
     ContactView,
     LogRequestView,
 )
-
-
-FAKE_PATH_LIST = [
-    reverse('requests'),
-    '12747630-426-13!@$*&_*&%!_)&@*$&__!#  *$!@$*_!%)(&#*$&&$)!(#$)(',
-    '/',
-    '/el/',
-    '/www',
-    '1242',
-    '/?d=3',
-    '/?_=23423523',
-    '/avaba-kedabra/',
-    '/****/'
-]
 
 
 class ContactUnitTest(TestCase):
@@ -65,8 +52,11 @@ class LogRequestTest(TestCase):
         """See results of 10 requests in the page.
         """
         (lambda: [self.client.get(path) for path in FAKE_PATH_LIST])()
+        response = self.client.get(
+            self.fake_path,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
         queryset = LogWebRequest.objects.order_by('-id')[:10]
-        response = self.client.get(self.fake_path)
         self.assertEqual(response.status_code, 200)
         map(lambda db: self.assertIn(str(db.path), response.content), queryset)
 

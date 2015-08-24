@@ -1,9 +1,15 @@
 import unittest
+import json
+import ipdb
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from django.core.urlresolvers import reverse
+from django.core import serializers
 
-from apps import TEST_DATA
+from apps import TEST_DATA, FAKE_PATH_LIST
 from apps import initial_data
+
+from apps.hello.models import LogWebRequest
 
 
 XPATHS = dict(
@@ -27,7 +33,7 @@ class ContactIntegrationTest(unittest.TestCase):
     def setUp(self):
         self.pk = initial_data[0]['pk']
         self.fake_path = reverse('contact', kwargs={'pk': self.pk})
-        self.absolute_url = 'http://localhost:8000' + self.fake_path
+        self.absolute_url = 'http://127.0.0.1:8000' + self.fake_path
         self.driver = webdriver.Firefox()
 
     def tearDown(self):
@@ -76,3 +82,70 @@ class ContactIntegrationTest(unittest.TestCase):
 
         other = driver.find_element_by_xpath(XPATHS['other']).text
         self.assertEqual(other, TEST_DATA['other'])
+
+
+class LogWebRequestIntegrationTest(unittest.TestCase):
+    """Perform tests to the data which rendered on the page,
+    step on different pages via one uri.
+    """
+
+    def setUp(self):
+        self.fake_path = reverse('requests')
+        self.uri = 'http://127.0.0.1:8000'
+        self.absolute_url = self.uri + self.fake_path
+        self.driver = webdriver.Firefox()
+
+    def tearDown(self):
+        self.driver.quit()
+
+    def test_10_fake_requests(self):
+        """Test 10 different requests and check them on requests page.
+        """
+        driver = self.driver
+        driver.get(self.absolute_url)
+        driver.implicitly_wait(10)
+
+        for fake_path in FAKE_PATH_LIST:
+            # step on another tab in browser
+            body = driver.find_element_by_tag_name('body')
+            body.send_keys(Keys.CONTROL + 't')
+            # go to this link
+            url = self.uri + fake_path
+            driver.get(url)
+            driver.implicitly_wait(10)
+            # return back, see if we get new result
+            body = driver.find_element_by_tag_name('body')
+            body.send_keys(Keys.CONTROL + Keys.F4)
+            first_row = driver.find_element_by_xpath('//tr[2]').text
+            last_rec = LogWebRequest.objects.order_by('-id')[0]
+            rec_values = [
+                record for record in json.loads(
+                    serializers.serialize('json', [last_rec])
+                )[0]['fields'].values()
+            ]
+            ipdb.set_trace()
+            map(lambda rec: self.assertIn(unicode(rec), first_row), rec_values)
+
+    def test_title_of_3_req(self):
+        """Test 3 requests and check title if it changed.
+        """
+        driver = self.driver
+        driver.get(self.absolute_url)
+        driver.implicitly_wait(10)
+
+        init_title = driver.title
+
+        for fake_path in FAKE_PATH_LIST[:2]:
+            # step on another tab in browser
+            body = driver.find_element_by_tag_name('body')
+            body.send_keys(Keys.CONTROL + 't')
+            # go to this link
+            url = self.uri + fake_path
+            driver.get(url)
+            driver.implicitly_wait(10)
+
+        # return back, see if we get new result
+        body = driver.find_element_by_tag_name('body')
+        body.send_keys(Keys.CONTROL + Keys.F4)
+        self.assertNotEqual(init_title, driver.title)
+        self.assertEqual(driver.title, "3 new requests")
