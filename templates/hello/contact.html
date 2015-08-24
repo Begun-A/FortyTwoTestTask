@@ -2,29 +2,45 @@
 
 {% block title %}{{ contact.first_name }} {{ contact.last_name }}{% endblock title %}
 
+{% block extra_head %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+{% endblock extra_head %}
+
 {% block content %}
-    <h3>42 Coffe Cups Test Assignment</h3>
-    <table>
-        <tr>
-            <td>Name: <div id="first_name">{{ contact.first_name }}</div></td>
-            <td>Contacts: <div id="contacts">{{ contact.contacts }}</div></td>
-        </tr>
-        <tr>
-            <td>Last name: <div id="last_name">{{ contact.last_name }}</div></td>
-            <td>Email: <div id="email">{{ contact.email }}</div></td>
-        </tr>
-        <tr>
-            <td>Date of birth: <div id="birth_date">{{ contact.birth_date }}</div></td>
-            <td>Jabber: <div id="jabber">{{ contact.jabber }}</div></td>
-        </tr>
-        <tr>
-            <td>Bio: <div id="bio">{{ contact.bio }}</div></td>
-            <td>Skype: <div id="skype">{{ contact.skype }}</div></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>Other contacts: <div id="other">{{ contact.other }}</div></td>
-        </tr>        
-    </table>
-    <div><a href="{% url 'requests' %}">requests</a></div>
+    <div class="container">
+        <div class="row">
+            <h3>42 Coffe Cups Test Assignment</h3>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <table class="table table-hover">
+                    <tr>
+                        <td>Name: <div id="first_name">{{ contact.first_name }}</div></td>
+                        <td>Contacts: <div id="contacts">{{ contact.contacts }}</div></td>
+                    </tr>
+                    <tr>
+                        <td>Last name: <div id="last_name">{{ contact.last_name }}</div></td>
+                        <td>Email: <div id="email">{{ contact.email }}</div></td>
+                    </tr>
+                    <tr>
+                        <td>Date of birth: <div id="birth_date">{{ contact.birth_date }}</div></td>
+                        <td>Jabber: <div id="jabber">{{ contact.jabber }}</div></td>
+                    </tr>
+                    <tr>
+                        <td>Bio: <div id="bio">{{ contact.bio }}</div></td>
+                        <td>Skype: <div id="skype">{{ contact.skype }}</div></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Other contacts: <div id="other">{{ contact.other }}</div></td>
+                    </tr>        
+                </table>
+            </div>
+            <div class="col-md-3"><a href="{% url 'login' %}">Login</a></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3"><a href="{% url 'requests' %}">requests</a></div>
+        </div>
+    </div>
 {% endblock content %}

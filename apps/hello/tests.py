@@ -1,3 +1,5 @@
+import json
+
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
@@ -7,7 +9,6 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from apps import FAKE_PATH_LIST, TEST_DATA
 from .middleware import LogWebReqMiddleware
 from .models import LogWebRequest
-from .forms import LoginForm
 from .views import (
     ContactView,
     LogRequestView,
@@ -155,6 +156,8 @@ class LoginUnitTest(TestCase):
 
     @staticmethod
     def _mock_session_to_request(request):
+        """Create session for user.
+        """
         middleware = SessionMiddleware()
         middleware.process_request(request)
         request.session.save()
@@ -172,7 +175,6 @@ class LoginUnitTest(TestCase):
         response = LoginView.as_view()(request)
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context_data['form'])
-        # import ipdb; ipdb.set_trace()
 
     def test_login_ajax_post_with_valid_user(self):
         """Submit valid data to the LoginView and get redirection.
@@ -207,4 +209,11 @@ class LoginUnitTest(TestCase):
         response = LoginView.as_view()(request)
         self.assertEqual(response.status_code, 400)
         self.assertIsNone(response.get('location'))
+
+        errors = ['__all__', 'username', 'password']
         self.assertIsNotNone(response.content)
+        res_cont = json.loads(response.content)
+        try:
+            map(lambda error: self.assertIsNotNone(res_cont[error]), errors)
+        except KeyError:
+            pass
