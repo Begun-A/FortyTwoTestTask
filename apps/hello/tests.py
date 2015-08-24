@@ -1,13 +1,15 @@
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
-from apps import FAKE_PATH_LIST
+from apps import FAKE_PATH_LIST, TEST_DATA
 from .middleware import LogWebReqMiddleware
 from .models import LogWebRequest
 from .views import (
     ContactView,
     LogRequestView,
+    LoginView
 )
 
 
@@ -130,3 +132,35 @@ class LogWebRequestMiddlewareTest(TestCase):
             fake_actions,
             lwr_queryset
         )
+
+
+class LoginUnitTest(TestCase):
+    """Check for form recieve, sending data(of exists user and not exits).
+    Check form for validation.
+    """
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.fake_path = reverse('login')
+        self.user = User.objects.create_user(
+            username=TEST_DATA['first_name'],
+            email=TEST_DATA['email'],
+            password='qwerty'
+        )
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_created_user(self):
+        """Check if user in database.
+        """
+        check_user = User.objects.get(email=TEST_DATA['email'])
+        self.assertEqual(self.user, check_user)
+
+    def test_login_get_OK(self):
+        """Check if we render page.
+        """
+        request = self.factory.get(self.fake_path)
+        view = LoginView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
