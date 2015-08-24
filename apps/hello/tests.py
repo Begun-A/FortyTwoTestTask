@@ -2,10 +2,12 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.sessions.middleware import SessionMiddleware
 
 from apps import FAKE_PATH_LIST, TEST_DATA
 from .middleware import LogWebReqMiddleware
 from .models import LogWebRequest
+from .forms import LoginForm
 from .views import (
     ContactView,
     LogRequestView,
@@ -145,11 +147,17 @@ class LoginUnitTest(TestCase):
         self.user = User.objects.create_user(
             username=TEST_DATA['first_name'],
             email=TEST_DATA['email'],
-            password='qwerty'
+            password=TEST_DATA['password']
         )
 
     def tearDown(self):
         self.user.delete()
+
+    @staticmethod
+    def _mock_session_to_request(request):
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
 
     def test_created_user(self):
         """Check if user in database.
@@ -157,10 +165,46 @@ class LoginUnitTest(TestCase):
         check_user = User.objects.get(email=TEST_DATA['email'])
         self.assertEqual(self.user, check_user)
 
-    def test_login_get_OK(self):
+    def test_login_get_OK_and_recieve_form(self):
         """Check if we render page.
         """
         request = self.factory.get(self.fake_path)
-        view = LoginView.as_view()
-        response = view(request)
+        response = LoginView.as_view()(request)
         self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.context_data['form'])
+        # import ipdb; ipdb.set_trace()
+
+    def test_login_ajax_post_with_valid_user(self):
+        """Submit valid data to the LoginView and get redirection.
+        """
+        request = self.factory.post(
+            path=self.fake_path,
+            data=dict(
+                username=TEST_DATA['first_name'],
+                password=TEST_DATA['password']
+            ),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertTrue(request.is_ajax())
+        LoginUnitTest._mock_session_to_request(request)
+        response = LoginView.as_view()(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.get('location'), reverse('contact'))
+
+    def test_login_ajax_post_with_invalid_user(self):
+        """Submit invalid data to the LoginView and get form errors.
+        """
+        request = self.factory.post(
+            path=self.fake_path,
+            data=dict(
+                username='avaba',
+                password='kedabra'
+            ),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertTrue(request.is_ajax())
+        LoginUnitTest._mock_session_to_request(request)
+        response = LoginView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertIsNone(response.get('location'))
+        self.assertIsNotNone(response.content)

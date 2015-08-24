@@ -12,6 +12,7 @@ with open(
 
 
 TEST_DATA = initial_data[0]['fields']
+TEST_DATA['password'] = 'qwerty'
 FAKE_PATH_LIST = [
     '/fefw',
     '/12747630-426-13!@$*&_*&%!_)&@*$&__!#  *$!@$*_!%)(&#*$&&$)!(#$)(',
