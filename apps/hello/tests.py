@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 
-from apps import initial_data, FAKE_PATH_LIST
+from apps import FAKE_PATH_LIST
 from .middleware import LogWebReqMiddleware
 from .models import LogWebRequest
 from .views import (
@@ -16,8 +16,7 @@ class ContactUnitTest(TestCase):
     """
 
     def setUp(self):
-        self.pk = initial_data[0]['pk']
-        self.fake_path = reverse('contact', kwargs={'pk': self.pk})
+        self.fake_path = reverse('contact')
         self.factory = RequestFactory()
 
     def test_contact_get_ok_request(self):
@@ -25,7 +24,7 @@ class ContactUnitTest(TestCase):
         """
         request = self.factory.get(path=self.fake_path)
         view = ContactView.as_view()
-        response = view(request, pk=self.pk)
+        response = view(request)
         self.assertEqual(response.status_code, 200)
 
 
@@ -66,7 +65,6 @@ class LogWebRequestMiddlewareTest(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
-        self.pk = initial_data[0]['pk']
         self.lwrm = LogWebReqMiddleware()
 
     def get_req_and_res(self):

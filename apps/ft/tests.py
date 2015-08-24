@@ -29,8 +29,7 @@ class ContactIntegrationTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self.pk = initial_data[0]['pk']
-        self.fake_path = reverse('contact', kwargs={'pk': self.pk})
+        self.fake_path = reverse('contact')
         self.absolute_url = 'http://127.0.0.1:8000' + self.fake_path
         self.driver = webdriver.Firefox()
 

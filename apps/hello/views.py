@@ -1,11 +1,14 @@
-from django.views.generic import DetailView, ListView
+from django.views.generic import ListView
 from .models import Contact, LogWebRequest
 
+from apps import initial_data
 
-class ContactView(DetailView):
+
+class ContactView(ListView):
 
     template_name = 'hello/contact.html'
-    model = Contact
+    queryset = Contact.objects.get(pk=initial_data[0]['pk'])
+    context_object_name = 'contact'
 
 
 class LogRequestView(ListView):
