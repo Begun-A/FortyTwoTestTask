@@ -26,7 +26,8 @@ def test():
 
 def commit(ticket, msg):
     result = local(
-        "git add --all && git commit -m 'ticket: %d tests %s'" % (ticket, msg)
+        "git add --all && git commit -m 'ticket:%d tests %s'" %
+        (int(ticket), msg)
     )
     if result.failed:
         abort("Invalid commit.")
@@ -44,6 +45,6 @@ def prepare_deploy(ticket=None, msg=None, branch=None):
     """Deploy with pass/failed tests.
     """
     test()
-    commit(msg)
+    commit(ticket, msg)
     push(branch)
     pull(branch)
