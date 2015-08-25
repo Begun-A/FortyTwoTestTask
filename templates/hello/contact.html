@@ -19,6 +19,10 @@
             <div class="col-md-3">Contacts</div>
             {% if user.is_authenticated %}
             <div class="col-md-3">Hello, {{ user.username }}</div> 
+            <form action="{% url 'logout' %}" method="post" class="form col-md-3">
+                {% csrf_token %}
+                <a href="javascript:;" onclick="parentNode.submit();">Logout</a>
+            </form>
             {% else %}
             <div class="col-md-3"><a href="{% url 'login' %}">Login</a></div>    
             {% endif %}
