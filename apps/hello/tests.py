@@ -201,11 +201,15 @@ class LoginUnitTest(TestCase):
         """
         request = self.factory.get(self.fake_path)
         response = LoginView.as_view()(request)
+        content = response.render().content
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context_data['form'])
+        self.assertIn('group-username', content)
+        self.assertIn('group-password', content)
 
     def test_login_ajax_post_with_valid_user(self):
-        """Submit valid data to the LoginView and get redirection.
+        """Submit valid data to the LoginView and get json answer with
+        redirect link.
         """
         request = self.factory.post(
             path=self.fake_path,
@@ -218,8 +222,11 @@ class LoginUnitTest(TestCase):
         self.assertTrue(request.is_ajax())
         LoginUnitTest._mock_session_to_request(request)
         response = LoginView.as_view()(request)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.get('location'), reverse('contact'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            json.loads(response.content)['url'], reverse('contact')
+        )
+        self.assertEqual(response.get('content-type'), 'application/json')
 
     def test_login_ajax_post_with_invalid_user(self):
         """Submit invalid data to the LoginView and get form errors.

@@ -11,7 +11,7 @@ with open(
     initial_data = json.load(test_data)
 
 
-TEST_DATA = initial_data[0]['fields']
+TEST_DATA = initial_data[1]['fields']
 TEST_DATA['password'] = 'qwerty'
 FAKE_PATH_LIST = [
     '/fefw',

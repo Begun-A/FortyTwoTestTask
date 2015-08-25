@@ -1,5 +1,5 @@
-from django.utils import simplejson
-from django.http import HttpResponse, HttpResponseRedirect
+import json
+from django.http import HttpResponse
 
 
 class JsonResponse(HttpResponse):
@@ -11,7 +11,7 @@ class JsonResponse(HttpResponse):
         status=None, content_type=None
     ):
         super(JsonResponse, self).__init__(
-            content=simplejson.dumps(content),
+            content=json.dumps(content),
             mimetype=mimetype,
             status=status,
             content_type=content_type,
@@ -33,6 +33,9 @@ class AjaxableResponseMixin(object):
     def form_valid(self, form):
         response = super(AjaxableResponseMixin, self).form_valid(form)
         if self.request.is_ajax():
-            return HttpResponseRedirect(self.get_success_url())
+            return JsonResponse(
+                content=self.data,
+                status=200
+            )
         else:
             return response
