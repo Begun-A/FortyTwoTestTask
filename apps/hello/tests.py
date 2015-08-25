@@ -20,6 +20,7 @@ from .views import (
 class ContactUnitTest(TestCase):
     """Simple test for status code. Testing '/contact/1/'
     """
+    fixtures = ['initial_data.json']
 
     def setUp(self):
         self.fake_path = reverse('contact')
@@ -64,6 +65,7 @@ class ContactUnitTest(TestCase):
 class LogRequestTest(TestCase):
     """Check status, ajax work.
     """
+    fixtures = ['initial_data.json']
 
     def setUp(self):
         self.factory = RequestFactory()
@@ -95,6 +97,8 @@ class LogRequestTest(TestCase):
 class LogWebRequestMiddlewareTest(TestCase):
     """Test middleware response, and ability to save responses.
     """
+
+    fixtures = ['initial_data.json']
 
     def setUp(self):
         self.factory = RequestFactory()
@@ -170,6 +174,8 @@ class LoginUnitTest(TestCase):
     Check form for validation.
     """
 
+    fixtures = ['initial_data.json']
+
     def setUp(self):
         self.factory = RequestFactory()
         self.fake_path = reverse('login')
@@ -223,9 +229,8 @@ class LoginUnitTest(TestCase):
         LoginUnitTest._mock_session_to_request(request)
         response = LoginView.as_view()(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            json.loads(response.content)['url'], reverse('contact')
-        )
+        success_url = json.loads(response.content)['url']
+        self.assertEqual(success_url, reverse('contact'))
         self.assertEqual(response.get('content-type'), 'application/json')
 
     def test_login_ajax_post_with_invalid_user(self):
@@ -251,3 +256,9 @@ class LoginUnitTest(TestCase):
             map(lambda error: self.assertIsNotNone(res_cont[error]), errors)
         except KeyError:
             pass
+
+    def test_logout_by_client(self):
+        """Close current session with user.
+        """
+        response = self.client.post(reverse('logout'))
+        self.assertEqual(response.status_code, 301)
