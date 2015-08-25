@@ -31,4 +31,5 @@ class LoginView(AjaxableResponseMixin, FormView):
 
     def form_valid(self, form):
         login(self.request, form.get_user())
+        self.data = dict(url=self.get_success_url())
         return super(LoginView, self).form_valid(form)
