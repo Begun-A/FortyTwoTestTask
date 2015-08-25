@@ -39,7 +39,7 @@ $(document).ready(function() {
                 table.html($(data).find('table'));
                 var income_id = $("table").find('tr').siblings().find('td').html();
                 var count = income_id - staged_id;
-                if (count != 0) {
+                if (count != 0 && count != NaN) {
                     document.title = count + " new requests";
                 }
             },

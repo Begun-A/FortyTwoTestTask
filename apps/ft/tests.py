@@ -1,8 +1,7 @@
-import unittest
-import time
-from selenium import webdriver
+from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
 from django.core.urlresolvers import reverse
+from django.test import LiveServerTestCase
 
 from apps import TEST_DATA, FAKE_PATH_LIST
 from apps.hello.models import LogWebRequest
@@ -21,95 +20,103 @@ XPATHS = dict(
 )
 
 
-class ContactIntegrationTest(unittest.TestCase):
+class BaseConfigTestCase(LiveServerTestCase):
+    """Config for initialization LiveServer.
+    """
+    fixtures = ['initial_data.json']
+
+    @classmethod
+    def setUpClass(cls):
+        cls.driver = WebDriver()
+        super(BaseConfigTestCase, cls).setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.quit()
+        super(BaseConfigTestCase, cls).tearDownClass()
+
+
+class ContactIntegrationTest(BaseConfigTestCase):
     """Perform tests to the data which rendered on the page and
     check it with database initial data.
     """
 
-    def setUp(self):
-        self.fake_path = reverse('contact')
-        self.absolute_url = 'http://127.0.0.1:8000' + self.fake_path
-        self.driver = webdriver.Firefox()
-
-    def tearDown(self):
-        self.driver.quit()
+    @classmethod
+    def setUpClass(cls):
+        cls.fake_path = reverse('contact')
+        super(ContactIntegrationTest, cls).setUpClass()
 
     def test_contact_find_data_on_page_and_check_it_with_base(self):
         """Tests all data on rendered page and check it with database.
         """
-        driver = self.driver
-        driver.get(self.absolute_url)
-        driver.implicitly_wait(10)
+        self.driver.get('%s%s' % (self.live_server_url, self.fake_path))
+        self.driver.implicitly_wait(10)
 
         self.assertEqual(
-            driver.title,
+            self.driver.title,
             unicode(
                 ' '.join([TEST_DATA['first_name'], TEST_DATA['last_name']])
             )
         )
 
-        first_name = driver.find_element_by_xpath(XPATHS['first_name']).text
+        first_name = self.driver \
+            .find_element_by_xpath(XPATHS['first_name']).text
         self.assertEqual(first_name, TEST_DATA['first_name'])
 
-        last_name = driver.find_element_by_xpath(XPATHS['last_name']).text
+        last_name = self.driver.find_element_by_xpath(XPATHS['last_name']).text
         self.assertEqual(last_name, TEST_DATA['last_name'])
 
         from datetime import datetime
-        birth_date = driver.find_element_by_xpath(XPATHS['birth_date']).text
+        birth_date = self.driver \
+            .find_element_by_xpath(XPATHS['birth_date']).text
         conv_date = datetime.strptime(birth_date, '%B %d, %Y') \
             .strftime('%Y-%m-%d')
         self.assertEqual(conv_date, TEST_DATA['birth_date'])
 
-        bio = driver.find_element_by_xpath(XPATHS['bio']).text
+        bio = self.driver.find_element_by_xpath(XPATHS['bio']).text
         self.assertEqual(bio, TEST_DATA['bio'])
 
-        contacts = driver.find_element_by_xpath(XPATHS['contacts']).text
+        contacts = self.driver.find_element_by_xpath(XPATHS['contacts']).text
         self.assertEqual(contacts, TEST_DATA['contacts'])
 
-        email = driver.find_element_by_xpath(XPATHS['email']).text
+        email = self.driver.find_element_by_xpath(XPATHS['email']).text
         self.assertEqual(email, TEST_DATA['email'])
 
-        jabber = driver.find_element_by_xpath(XPATHS['jabber']).text
+        jabber = self.driver.find_element_by_xpath(XPATHS['jabber']).text
         self.assertEqual(jabber, TEST_DATA['jabber'])
 
-        skype = driver.find_element_by_xpath(XPATHS['skype']).text
+        skype = self.driver.find_element_by_xpath(XPATHS['skype']).text
         self.assertEqual(skype, TEST_DATA['skype'])
 
-        other = driver.find_element_by_xpath(XPATHS['other']).text
+        other = self.driver.find_element_by_xpath(XPATHS['other']).text
         self.assertEqual(other, TEST_DATA['other'])
 
 
-class LogWebRequestIntegrationTest(unittest.TestCase):
+class LogWebRequestIntegrationTest(BaseConfigTestCase):
     """Perform tests to the data which rendered on the page,
     step on different pages via one uri.
     """
 
-    def setUp(self):
-        self.fake_path = reverse('requests')
-        self.uri = 'http://127.0.0.1:8000'
-        self.absolute_url = self.uri + self.fake_path
-        self.driver = webdriver.Firefox()
-
-    def tearDown(self):
-        self.driver.quit()
+    @classmethod
+    def setUpClass(cls):
+        cls.fake_path = reverse('requests')
+        super(LogWebRequestIntegrationTest, cls).setUpClass()
 
     def test_10_fake_requests(self):
         """Test 10 different requests and check them on requests page.
         """
-        driver = self.driver
-        driver.get(self.absolute_url)
-        driver.implicitly_wait(10)
+        self.driver.get('%s%s' % (self.live_server_url, self.fake_path))
+        self.driver.implicitly_wait(10)
 
         for fake_path in FAKE_PATH_LIST:
             # step on another tab in browser
-            body = driver.find_element_by_tag_name('body')
+            body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + 't')
             # go to this link
-            url = self.uri + fake_path
-            driver.get(url)
-            driver.implicitly_wait(10)
+            self.driver.get('%s%s' % (self.live_server_url, fake_path))
+            self.driver.implicitly_wait(10)
             # return back, see if we get new result
-            body = driver.find_element_by_tag_name('body')
+            body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + Keys.F4)
 
             queryset = LogWebRequest.objects.order_by('-id')[0]
@@ -117,7 +124,7 @@ class LogWebRequestIntegrationTest(unittest.TestCase):
                 each.value_from_object(queryset)
                 for each in queryset._meta.fields
             ]
-            driver.refresh()
+            self.driver.refresh()
             first_row = self.driver.find_elements_by_tag_name('tr')[1].text
             map(
                 lambda row: self.assertIn(
@@ -125,31 +132,28 @@ class LogWebRequestIntegrationTest(unittest.TestCase):
                 ), last_rec[:3]
             )
 
+    """
     def test_title_of_3_req(self):
-        """Test 3 requests and check title if it changed.
-        """
-        driver = self.driver
-        driver.get(self.absolute_url)
-        driver.implicitly_wait(10)
+        Test 3 requests and check title if it changed.
+        self.driver.get('%s%s' % (self.live_server_url, self.fake_path))
+        self.driver.implicitly_wait(10)
 
-        init_title = driver.title
+        init_title = self.driver.title
         depth = 0
         for fake_path in FAKE_PATH_LIST[:3]:
             # step on another tab in browser
-            body = driver.find_element_by_tag_name('body')
+            body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + 't')
             # go to this link
-            url = self.uri + fake_path
-            # ipdb.set_trace()
-            driver.get(url)
-            driver.implicitly_wait(10)
+            self.driver.get('%s%s' % (self.live_server_url, fake_path))
+            self.driver.implicitly_wait(10)
             depth = depth + 1
         # return back, see if we get new result
-        time.sleep(1)
         for d in xrange(depth):
-            body = driver.find_element_by_tag_name('body')
+            body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + Keys.F4)
         # ipdb.set_trace()
-        new_title = driver.title
+        new_title = self.driver.title
         self.assertNotEqual(init_title, new_title)
         self.assertEqual(new_title, "3 new requests")
+    """
