@@ -17,16 +17,32 @@ $(document).ready(function() {
         }
     });
     var title = document.title,
-        table = $("table"),
-        staged_id = table.find('tr').siblings().find('td').html();
-
-    document.addEventListener("visibilitychange", function() {
+        staged_count = 0,
+        hidden, 
+        visibilityChange; 
+        
+    if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+        hidden = "hidden";
+        visibilityChange = "visibilitychange";
+    } else if (typeof document.mozHidden !== "undefined") {
+        hidden = "mozHidden";
+        visibilityChange = "mozvisibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+        hidden = "msHidden";
+        visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+        hidden = "webkitHidden";
+        visibilityChange = "webkitvisibilitychange";
+    }
+    document.addEventListener(visibilityChange, function() {
+        if (document.visibilityState == hidden) {
+            staged_count = $('#req_id').html();
+        }
         if (document.visibilityState == "visible") {
-            table = $("table");
             setTimeout(function() {
                 document.title = title;
             }, 1000);
-            staged_id = $("table").find('tr').siblings().find('td').html();
+            staged_count = 0;
         }
     });
 
@@ -36,11 +52,11 @@ $(document).ready(function() {
             url: "/requests/",
             cache: false,
             success: function(data) {
-                table.html($(data).find('table'));
-                var income_id = $("table").find('tr').siblings().find('td').html();
-                var count = income_id - staged_id;
-                if (count != 0 && count != NaN) {
-                    document.title = count + " new requests";
+                $('tbody').replaceWith($(data).find('tbody'));
+                var income_count = $('#req_id').html();
+                if (staged_count != 0 && income_count > staged_count) {
+                    var count_req = income_count - staged_count;
+                    document.title = count_req + " new requests";
                 }
             },
             error: function(response, data, xhr, errmsg, err) {

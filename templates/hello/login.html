@@ -11,7 +11,7 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <h3>42 Coffe Cups Test Assignment</h3>
+        <div class="col-md-4"></div>
         <form id="sign_in" class="form col-md-4" action="post" action="{% url 'login' %}">
             <div class="form-group">
                 {% csrf_token %}
@@ -27,7 +27,8 @@
         </form>
     </div>
     <div class="row">
-        <div class="col-md-3"><a href="{% url 'contact' %}">Return to contacts</a></div>
+        <div class="col-md-4"></div>
+        <div class="col-md-4"><a href="{% url 'contact' %}">Return to contacts</a></div>
     </div>
 </div>
 {% endblock content %}

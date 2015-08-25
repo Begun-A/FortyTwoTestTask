@@ -6,7 +6,7 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
 <link rel="stylesheet" href="{% static 'css/bootstrap.css.map' %}" />
-<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/custom.js' %}"></script>
 {% endblock extra_head %}
 
@@ -38,6 +38,7 @@
             </tbody>  
             {% endautoescape %}   
         </table>
+        <hr>
         <div class="row">
             <div class="col-md-3">
                 <a href="{% url 'contact' %}">contact</a>

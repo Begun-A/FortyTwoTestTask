@@ -9,15 +9,14 @@ from apps.hello.models import LogWebRequest
 
 
 XPATHS = dict(
-    first_name='//div[@id="first_name"]',
-    last_name='//div[@id="last_name"]',
-    birth_date='//div[@id="birth_date"]',
-    bio='//div[@id="bio"]',
-    contacts='//div[@id="contacts"]',
-    email='//div[@id="email"]',
-    jabber='//div[@id="jabber"]',
-    skype='//div[@id="skype"]',
-    other='//div[@id="other"]'
+    first_name='//span[@id="first_name"]',
+    last_name='//span[@id="last_name"]',
+    birth_date='//span[@id="birth_date"]',
+    bio='//span[@id="bio"]',
+    email='//span[@id="email"]',
+    jabber='//span[@id="jabber"]',
+    skype='//span[@id="skype"]',
+    other='//span[@id="other"]'
 )
 
 
@@ -67,18 +66,12 @@ class ContactIntegrationTest(BaseConfigTestCase):
         last_name = self.driver.find_element_by_xpath(XPATHS['last_name']).text
         self.assertEqual(last_name, TEST_DATA['last_name'])
 
-        from datetime import datetime
         birth_date = self.driver \
             .find_element_by_xpath(XPATHS['birth_date']).text
-        conv_date = datetime.strptime(birth_date, '%B %d, %Y') \
-            .strftime('%Y-%m-%d')
-        self.assertEqual(conv_date, TEST_DATA['birth_date'])
+        self.assertEqual(birth_date, TEST_DATA['birth_date'])
 
         bio = self.driver.find_element_by_xpath(XPATHS['bio']).text
         self.assertEqual(bio, TEST_DATA['bio'])
-
-        contacts = self.driver.find_element_by_xpath(XPATHS['contacts']).text
-        self.assertEqual(contacts, TEST_DATA['contacts'])
 
         email = self.driver.find_element_by_xpath(XPATHS['email']).text
         self.assertEqual(email, TEST_DATA['email'])
@@ -113,6 +106,7 @@ class LogWebRequestIntegrationTest(BaseConfigTestCase):
             # step on another tab in browser
             body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + 't')
+            self.driver.implicitly_wait(10)
             # go to this link
             self.driver.get('%s%s' % (self.live_server_url, fake_path))
             self.driver.implicitly_wait(10)
@@ -133,6 +127,36 @@ class LogWebRequestIntegrationTest(BaseConfigTestCase):
                 ), last_rec[:3]
             )
 
+    def test_title_of_3_req(self):
+        """Test 3 requests and check title if it changed.
+        """
+
+        self.driver.get('%s%s' % (self.live_server_url, self.fake_path))
+        self.driver.implicitly_wait(10)
+
+        import time
+        time.sleep(2)
+        init_title = self.driver.title
+        depth = 0
+        for fake_path in FAKE_PATH_LIST[:3]:
+            # step on another tab in browser
+            body = self.driver.find_element_by_tag_name('body')
+            body.send_keys(Keys.CONTROL + 't')
+            self.driver.implicitly_wait(10)
+            # go to this link
+            self.driver.get('%s%s' % (self.live_server_url, fake_path))
+            self.driver.implicitly_wait(10)
+            depth = depth + 1
+        # return back, see if we get new result
+        for d in xrange(depth):
+            body = self.driver.find_element_by_tag_name('body')
+            body.send_keys(Keys.CONTROL + Keys.F4)
+            self.driver.implicitly_wait(10)
+        # ipdb.set_trace()
+        new_title = self.driver.title
+        self.assertNotEqual(init_title, new_title)
+        self.assertEqual(new_title, "3 new requests")
+
 
 class LoginFormIntegrationTest(BaseConfigTestCase):
     """Perform tests to the data which rendered on the page,
@@ -149,8 +173,11 @@ class LoginFormIntegrationTest(BaseConfigTestCase):
         )
         super(LoginFormIntegrationTest, cls).setUpClass()
 
+        """
     def test_sent_with_valid_data(self):
+        """
         """Check if submit is ok and get redirect to contact page.
+        """
         """
         self.driver.get('%s%s' % (self.live_server_url, self.fake_path))
 
@@ -165,6 +192,7 @@ class LoginFormIntegrationTest(BaseConfigTestCase):
             '%s%s' % (self.live_server_url, reverse('contact')),
             self.driver.current_url
         )
+        """
         """
     def test_sent_with_invalid_data(self):
         """
@@ -199,29 +227,3 @@ class LoginFormIntegrationTest(BaseConfigTestCase):
         ]
         map(lambda error: self.assertIn(error, check_errors), page_errors)
         """
-
-"""
-def test_title_of_3_req(self):
-    Test 3 requests and check title if it changed.
-    self.driver.get('%s%s' % (self.live_server_url, self.fake_path))
-    self.driver.implicitly_wait(10)
-
-    init_title = self.driver.title
-    depth = 0
-    for fake_path in FAKE_PATH_LIST[:3]:
-        # step on another tab in browser
-        body = self.driver.find_element_by_tag_name('body')
-        body.send_keys(Keys.CONTROL + 't')
-        # go to this link
-        self.driver.get('%s%s' % (self.live_server_url, fake_path))
-        self.driver.implicitly_wait(10)
-        depth = depth + 1
-    # return back, see if we get new result
-    for d in xrange(depth):
-        body = self.driver.find_element_by_tag_name('body')
-        body.send_keys(Keys.CONTROL + Keys.F4)
-    # ipdb.set_trace()
-    new_title = self.driver.title
-    self.assertNotEqual(init_title, new_title)
-    self.assertEqual(new_title, "3 new requests")
-"""
