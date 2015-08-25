@@ -3,7 +3,6 @@ from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
 from django.core.urlresolvers import reverse
 from django.test import LiveServerTestCase
-from django.contrib.auth.models import User
 
 from apps import TEST_DATA, FAKE_PATH_LIST
 from apps.hello.models import LogWebRequest
@@ -202,7 +201,9 @@ class LoginFormIntegrationTest(BaseConfigTestCase):
         password_input = self.driver.find_element_by_name("password")
         password_input.send_keys('I try to hack')
 
-        sign_in = self.driver.find_element_by_xpath('//input[@value="Sign in"]')
+        sign_in = self.driver.find_element_by_xpath(
+            '//input[@value="Sign in"]'
+        )
         sign_in.click()
         # check for disabled button
         self.assertTrue(sign_in.is_enabled())
