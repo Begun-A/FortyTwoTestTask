@@ -209,7 +209,6 @@ class LoginUnitTest(TestCase):
         response = LoginView.as_view()(request)
         self.assertEqual(response.status_code, 400)
         self.assertIsNone(response.get('location'))
-
         errors = ['__all__', 'username', 'password']
         self.assertIsNotNone(response.content)
         res_cont = json.loads(response.content)
