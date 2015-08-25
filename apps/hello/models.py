@@ -9,7 +9,6 @@ class Contact(models.Model):
     last_name = models.CharField(max_length=16)
     birth_date = models.DateField()
     bio = models.TextField()
-    contacts = models.CharField(max_length=16)
     email = models.EmailField()
     jabber = models.EmailField()
     skype = models.CharField(max_length=25)

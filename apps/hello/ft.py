@@ -165,9 +165,11 @@ class LoginFormIntegrationTest(BaseConfigTestCase):
             '%s%s' % (self.live_server_url, reverse('contact')),
             self.driver.current_url
         )
-
+        """
     def test_sent_with_invalid_data(self):
+        """
         """Check if form show errors.
+        """
         """
         self.driver.get('%s%s' % (self.live_server_url, self.fake_path))
 
@@ -196,7 +198,7 @@ class LoginFormIntegrationTest(BaseConfigTestCase):
             'Note that both fields may be case-sensitive.'
         ]
         map(lambda error: self.assertIn(error, check_errors), page_errors)
-
+        """
 
 """
 def test_title_of_3_req(self):
