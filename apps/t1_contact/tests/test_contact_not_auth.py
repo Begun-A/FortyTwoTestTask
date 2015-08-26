@@ -6,8 +6,8 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 
 from apps import TEST_DATA
-from .models import Contact
-from .views import ContactView
+from t1_contact.models import Contact
+from t1_contact.views import ContactView
 
 
 class ContactUnitTest(TestCase):
