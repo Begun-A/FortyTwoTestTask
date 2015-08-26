@@ -66,6 +66,7 @@ class LogWebRequestIntegrationTest(BaseConfigTestCase):
             self.driver.get('%s%s' % (self.live_server_url, fake_path))
             self.driver.implicitly_wait(10)
             depth = depth + 1
+
         # return back, see if we get new result
         for d in xrange(depth):
             body = self.driver.find_element_by_tag_name('body')

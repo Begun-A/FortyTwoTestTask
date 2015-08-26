@@ -3,7 +3,7 @@ from django.views.generic.edit import FormView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import login, logout
 from .forms import LoginForm
-from .mixins import AjaxableResponseMixin
+from bl.mixins import AjaxableResponseMixin
 
 
 class LoginView(AjaxableResponseMixin, FormView):

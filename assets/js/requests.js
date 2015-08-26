@@ -4,7 +4,7 @@ $(document).ready(function() {
         hidden, 
         visibilityChange; 
         
-    if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+    if (typeof document.hidden !== "undefined") { 
         hidden = "hidden";
         visibilityChange = "visibilitychange";
     } else if (typeof document.mozHidden !== "undefined") {
@@ -37,7 +37,7 @@ $(document).ready(function() {
             success: function(data) {
                 $('tbody').replaceWith($(data).find('tbody'));
                 var income_count = $('#req_id').html();
-                if (staged_count != 0 && income_count > staged_count) {
+                if (staged_count > 0 && income_count > staged_count) {
                     var count_req = income_count - staged_count;
                     document.title  = "(" + count_req +  ") " + title;
                 }

@@ -1,7 +1,4 @@
-<form class="form-horizontal" action="{% url 'contact' %}">
-    <div class="form-group">
-        <div class="col-md-6">{% csrf_token %}</div>
-    </div>
+<form id="update_contact" class="form-horizontal" action="{% url 'contact' %}">
     <div class="form-group">
         <div id="contact-{{ form.first_name.name }}">
             <label class="control-label col-xs-2">{{ form.first_name.label }}</label>
@@ -10,7 +7,7 @@
             </div>
         </div>
         <div id="contact-{{ form.email.name }}">
-            <label class="control-label col-xs-2">{{ form.email.label }}</label>
+            <label class="control-label col-xs-3">{{ form.email.label }}</label>
             <div class="col-xs-2">
                 {{ form.email }}
             </div>
@@ -24,7 +21,7 @@
             </div>
         </div>
         <div id="contact-{{ form.jabber.name }}">
-            <label class="control-label col-xs-2">{{ form.jabber.label }}</label>
+            <label class="control-label col-xs-3">{{ form.jabber.label }}</label>
             <div class="col-xs-2">
                 {{ form.jabber }}
             </div>
@@ -38,7 +35,7 @@
             </div>
         </div>
         <div id="contact-{{ form.skype.name }}">
-            <label class="control-label col-xs-2">{{ form.skype.label }}</label>
+            <label class="control-label col-xs-3">{{ form.skype.label }}</label>
             <div class="col-xs-2">
                 {{ form.skype }}
             </div>
@@ -47,13 +44,14 @@
     <div class="form-group">
         <div id="contact-image">
             <label class="control-label col-xs-2">Photo: </label>
-            <div class="col-xs-2">
-                <input type="file" />
+            <div class="col-xs-3">
+                <input id="update_file"  type="file" />
+                <img id="update_img" class="img-thumbnail" src="http://placehold.it/200x200"/>
             </div>
         </div>
         <div id="contact-{{ form.other.name }}">
-            <div class="col-xs-1"></div>
-            <div class="col-xs-2">
+            <div class="col-xs-2"></div>
+            <div class="col-xs-3">
                 <label>{{ form.other.label }}</label>
                 {{ form.other }}
             </div>
@@ -61,21 +59,23 @@
     </div>
     <div class="form-group">
         <div id="contact-image">
-            <div class="col-xs-2"></div>
-            <div class="col-xs-2">
-                <img src="http://placehold.it/120x120" />
-            </div>
+            <div class="col-xs-4"></div>
         </div>
         <div id="contact-{{ form.bio.name }}">
-            <div class="col-xs-1"></div>
-            <div class="col-xs-2">
+            <div class="col-xs-3"></div>
+            <div class="col-xs-3">
                 <label>{{ form.bio.label }}</label>
                 {{ form.bio }}
             </div>
         </div>
     </div>
     <div class="form-group">
-        <input type="submit" value="Save" />
-        <input type="button" value="Cancel" />
+        <div class="col-xs-1"></div>
+        <div class="col-xs-2">
+            {% csrf_token %}
+            <input id="update_in" class="btn btn-warning btn-sm" type="submit" value="Save" />
+            <input id="cancel_in" type="button" class="btn btn-info btn-sm" value="Cancel" />
+        </div>
+        <div class="col-xs-1 update_success"></div>
     </div>
 </form>
