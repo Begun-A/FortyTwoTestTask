@@ -1,0 +1,25 @@
+<div class="m-block row">
+    <div class="col-md-4">Name: <span id="first_name">{{ contact.first_name }}</span></div>
+    <div class="col-md-4">Contacts</div>
+    <div class="col-md-4"><a href="{% url 'login' %}">Login</a></div>    
+</div>
+<div class="m-block row">
+    <div class="col-md-4">Last name: <span id="last_name">{{ contact.last_name }}</span></div>
+    <div class="col-md-4">Email: <span id="email">{{ contact.email }}</span></div>
+</div>
+<div class="m-block row">
+    <div class="col-md-4">Date of birth: <span id="birth_date">{{ contact.birth_date|date:"Y-m-d" }}</span></div>
+    <div class="col-md-4">Jabber: <span id="jabber">{{ contact.jabber }}</span></div>
+</div>
+<div class="m-block row">
+    <div class="col-md-4">Photo: </div>
+    <div class="col-md-4">Skype: <span id="skype">{{ contact.skype }}</span></div>
+</div>
+<div class="m-block row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">Other contacts: <span id="other">{{ contact.other }}</span></div>
+</div>
+<div class="m-block row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">Bio: <span id="bio">{{ contact.bio }}</span></div>
+</div>

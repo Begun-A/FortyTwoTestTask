@@ -127,7 +127,6 @@ class ContactFormTest(TestCase):
         request.user = self.user
         LoginUnitTest._mock_session_to_request(request)
         response = ContactView.as_view()(request)
-        content = response.render().content
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context_data['form'])
         ids = [
@@ -140,4 +139,7 @@ class ContactFormTest(TestCase):
             'id="contact-skype"',
             'id="contact-other"'
         ]
-        map(lambda form_id: self.assertIn(form_id, content), ids)
+        map(
+            lambda form_id: self.assertIn(form_id, response.render().content),
+            ids
+        )

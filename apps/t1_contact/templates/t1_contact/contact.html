@@ -14,45 +14,20 @@
             <h3>42 Coffe Cups Test Assignment</h3>
         </div>
         <hr>
-        <div class="m-block row">
-            <div class="col-md-4">Name: <span id="first_name">{{ contact.first_name }}</span></div>
-            <div class="col-md-4">Contacts</div>
-            {% if user.is_authenticated %}
-            <div class="col-md-2">
-                Hello, {{ user.username }}
-            </div> 
-            <form class="col-md-2" action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <a href="javascript:;" onclick="parentNode.submit();">Logout</a>
-            </form>
-            {% else %}
-            <div class="col-md-4"><a href="{% url 'login' %}">Login</a></div>    
-            {% endif %}
-        </div>
-
-        <div class="m-block row">
-            <div class="col-md-4">Last name: <span id="last_name">{{ contact.last_name }}</span></div>
-            <div class="col-md-4">Email: <span id="email">{{ contact.email }}</span></div>
-        </div>
-        <div class="m-block row">
-            <div class="col-md-4">Date of birth: <span id="birth_date">{{ contact.birth_date|date:"Y-m-d" }}</span></div>
-            <div class="col-md-4">Jabber: <span id="jabber">{{ contact.jabber }}</span></div>
-        </div>
-        <div class="m-block row">
-            <div class="col-md-4">Photo: </div>
-            <div class="col-md-4">Skype: <span id="skype">{{ contact.skype }}</span></div>
-        </div>
-        <div class="m-block row">
-            <div class="col-md-4"></div>
-            <div class="col-md-4">Other contacts: <span id="other">{{ contact.other }}</span></div>
-        </div>
-        <div class="m-block row">
-            <div class="col-md-4"></div>
-            <div class="col-md-4">Bio: <span id="bio">{{ contact.bio }}</span></div>
-        </div>
+        {% if user.is_authenticated %}
+            {% include "t1_contact/contact_is_auth.html" %}
+        {% else %}
+            {% include "t1_contact/contact_not_auth.html" %}
+        {% endif %}
         <hr>
         <div class="row">
-            <div class="col-md-3"><a href="{% url 'requests' %}">requests</a></div>
+            <div class="col-md-1"><a href="{% url 'requests' %}">requests</a></div>
+            {% if user.is_authenticated %} 
+            <form action="{% url 'logout' %}" method="post" class="form col-md-1">
+                {% csrf_token %}
+                <a href="javascript:;" onclick="parentNode.submit();">logout</a>
+            </form>
+            {% endif %}
         </div>
     </div>
 {% endblock content %}
