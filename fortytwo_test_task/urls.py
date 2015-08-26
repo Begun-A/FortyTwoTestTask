@@ -1,12 +1,10 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import admin
-from hello.views import (
-    ContactView,
-    LogRequestView,
-    LoginView,
-    LogoutView
-)
+from t1_contact.views import ContactView
+from t3_requests.views import LogRequestView
+from t5_forms.views import LoginView, LogoutView
+
 admin.autodiscover()
 
 urlpatterns = patterns(

@@ -41,7 +41,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.hello',
+    'apps.t1_contact',
+    'apps.t3_requests',
+    'apps.t5_forms',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -51,7 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'hello.middleware.LogWebReqMiddleware',
+    't3_requests.middleware.LogWebReqMiddleware',
 )
 
 ROOT_URLCONF = 'fortytwo_test_task.urls'
@@ -127,3 +129,7 @@ TEMPLATE_DIRS = (
 
 # Turn off south during test
 SOUTH_TESTS_MIGRATE = False
+
+FIXTURE_DIRS = (
+    os.path.join(BASE_DIR, 'apps/t1_contact/fixtures'),
+)
