@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
 
 from apps import TEST_DATA
-from .views import LoginView
+from t5_forms.views import LoginView
+from t1_contact.views import ContactView
 
 
 class LoginUnitTest(TestCase):
@@ -103,3 +104,40 @@ class LoginUnitTest(TestCase):
         """
         response = self.client.post(reverse('logout'))
         self.assertEqual(response.status_code, 301)
+
+
+class ContactFormTest(TestCase):
+    """Check for form recieve, when open session with user.
+    """
+    fixtures = ['initial_data.json']
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.fake_path = reverse('contact')
+        self.user = User.objects.create_user(
+            username=TEST_DATA['first_name'],
+            email=TEST_DATA['email'],
+            password=TEST_DATA['password']
+        )
+
+    def test_if_form_is_present_on_contact_page(self):
+        """Must be changed the template and new form present.
+        """
+        request = self.factory.get(path=self.fake_path)
+        request.user = self.user
+        LoginUnitTest._mock_session_to_request(request)
+        response = ContactView.as_view()(request)
+        content = response.render().content
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.context_data['form'])
+        ids = [
+            'id="contact-first_name"',
+            'id="contact-last_name"',
+            'id="contact-birth_date"',
+            'id="contact-bio"',
+            'id="contact-email"',
+            'id="contact-jabber"',
+            'id="contact-skype"',
+            'id="contact-other"'
+        ]
+        map(lambda form_id: self.assertIn(form_id, content), ids)

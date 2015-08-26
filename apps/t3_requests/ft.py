@@ -2,7 +2,7 @@ from selenium.webdriver.common.keys import Keys
 from django.core.urlresolvers import reverse
 
 from apps import FAKE_PATH_LIST, BaseConfigTestCase
-from apps.hello.models import LogWebRequest
+from apps.t3_requests.models import LogWebRequest
 
 
 class LogWebRequestIntegrationTest(BaseConfigTestCase):
@@ -74,4 +74,4 @@ class LogWebRequestIntegrationTest(BaseConfigTestCase):
         # ipdb.set_trace()
         new_title = self.driver.title
         self.assertNotEqual(init_title, new_title)
-        self.assertEqual(new_title, "3 new requests")
+        self.assertEqual(new_title, "(3) New requests")
