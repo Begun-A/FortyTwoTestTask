@@ -19,6 +19,6 @@ collectstatic:
 	PYTHONPATH=`pwd` DJANGO_SETTINGS_MODULE=$(SETTINGS) $(MANAGE) collectstatic --noinput
 
 selenium:
-	nosetests apps.hello.ft
+	nosetests --tests=apps.t1_contact.ft,apps.t3_requests.ft,apps.t5_forms.requests
 
 .PHONY: test syncdb migrate
