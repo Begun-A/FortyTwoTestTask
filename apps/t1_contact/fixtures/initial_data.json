@@ -18,7 +18,7 @@
         }
     },
     {
-        "model": "hello.contact",
+        "model": "t1_contact.contact",
         "pk": 1,
         "fields": {
             "first_name": "Bogdan",
