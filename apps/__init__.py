@@ -15,6 +15,7 @@ with open(
 
 TEST_DATA = initial_data[1]['fields']
 TEST_DATA['password'] = 'qwerty'
+IMG_PATH = '~/Pictures/test.jpg'
 FAKE_PATH_LIST = [
     '/fefw',
     '/12747630-426-13!@$*&_*&%!_)&@*$&__!#  *$!@$*_!%)(&#*$&&$)!(#$)(',

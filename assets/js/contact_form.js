@@ -40,7 +40,7 @@ $(document).ready(function() {
     });
 
     function errorResponse(response, statusText, xhr, $form) {
-        $('.form-group').last().after("<span class='text-danger'>Error.</span>");
+        $('.update_error').html("<span class='text-danger'>Error.</span>");
         var errors = $.parseJSON(response.responseText);
         for (key in errors) {
             var contact = "#contact-" + key + " div";

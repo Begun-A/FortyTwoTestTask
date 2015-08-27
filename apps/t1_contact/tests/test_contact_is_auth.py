@@ -5,7 +5,7 @@ from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from apps import TEST_DATA
+from apps import TEST_DATA, IMG_PATH
 from t1_contact.views import ContactView
 from t5_forms.tests import LoginUnitTest
 
@@ -52,15 +52,17 @@ class ContactFormTest(TestCase):
     def test_check_valid_post_request_and_get_changed_data_on_page(self):
         """Check post request and for change the data in db(without image).
         """
-        data = dict(
-            first_name="hello",
-            last_name="world",
-            birth_date='1348-03-23',
-            bio="wefwefwefwefwefwe",
-            email="test@test.ad",
-            jabber="test@jabber.com",
-            skype="fwfwefwefwe"
-        )
+        with open(IMG_PATH) as img:
+            data = dict(
+                first_name="hello",
+                last_name="world",
+                birth_date='1348-03-23',
+                bio="wefwefwefwefwefwe",
+                email="test@test.ad",
+                jabber="test@jabber.com",
+                skype="fwfwefwefwe",
+                image=img
+            )
         response = self.client.post(
             path=self.fake_path,
             data=data,
@@ -85,7 +87,8 @@ class ContactFormTest(TestCase):
             bio="",
             email="",
             jabber="",
-            skype=""
+            skype="",
+            img=""
         )
         response = self.client.post(
             path=self.fake_path,
