@@ -17,15 +17,17 @@ class Contact(models.Model):
     photo = models.ImageField(upload_to='images', blank=True, null=True)
 
     def save(self, size=(200, 200)):
-        if not self.photo.name:
-            return
         super(Contact, self).save()
 
-        filename = str(self.photo.path)
-        image = Image.open(filename)
+        try:
+            filename = str(self.photo.path)
+            image = Image.open(filename)
 
-        image.resize(size, Image.ANTIALIAS)
-        image.save(filename)
+            image.resize(size, Image.ANTIALIAS)
+            image.save(filename)
+        except (IOError, ValueError, AttributeError):
+            pass
+        return None
 
 
 class LogWebRequest(models.Model):

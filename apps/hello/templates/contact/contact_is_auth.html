@@ -47,9 +47,18 @@
             <div class="col-xs-3">
                 {{ form.photo }}
                 {% if contact.photo %}
-                <a id="update_img_link" href="{{ MEDIA_URL }}{{ contact.photo }}">{{ MEDIA_URL }}{{ contact.photo }}</a>
+                <a id="update_img_link" href="{{ MEDIA_URL }}{{ contact.photo }}">
+                    {{ MEDIA_URL }}{{ contact.photo }}
+                </a>
+                {% else %}
+                <a id="update_img_link" href="">
+                </a>
                 {% endif %}
-                <img id="update_img" class="img-thumbnail" src="{{ MEDIA_URL }}{{ contact.photo }}"/>
+                {% if contact.photo != "" %}
+                    <img id="update_img" class="img-thumbnail" src="{{ MEDIA_URL }}{{ contact.photo }}"/>
+                {% else %}
+                    <img id="update_img" class="img-thumbnail" src=""/>
+                {% endif %}
             </div>
         </div>
         <div id="contact-{{ form.other.name }}">
