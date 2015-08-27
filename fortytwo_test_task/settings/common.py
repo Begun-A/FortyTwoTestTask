@@ -41,9 +41,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.t1_contact',
-    'apps.t3_requests',
-    'apps.t5_forms',
+    'south',
+    'apps.hello',
     'apps.bl',
 )
 
@@ -54,7 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    't3_requests.middleware.LogWebReqMiddleware',
+    'bl.middleware.LogWebReqMiddleware',
 )
 
 ROOT_URLCONF = 'fortytwo_test_task.urls'
@@ -88,7 +87,7 @@ USE_TZ = True
 # Upload Media
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, '..', 'uploads')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -132,5 +131,5 @@ TEMPLATE_DIRS = (
 SOUTH_TESTS_MIGRATE = False
 
 FIXTURE_DIRS = (
-    os.path.join(BASE_DIR, 'apps/t1_contact/fixtures'),
+    os.path.join(BASE_DIR, 'apps/hello/fixtures'),
 )

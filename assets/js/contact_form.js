@@ -17,6 +17,8 @@ $(document).ready(function() {
         }
     });
     var form = $("form#update_contact");
+    var form_img = $("#update_img_link").attr("href");
+    var MEDIA_URL = '/uploads/';
     var options = {
         dataType: 'json',
         url: form.attr('action'),
@@ -24,38 +26,48 @@ $(document).ready(function() {
         success: successResponse,
         error: errorResponse,
     };
-
-    form.submit(function() {
-        $("#update_in").attr('disabled', 'disabled');
+    function error_remove() {
         $(".form-group").removeClass('has-error');
         $(".help-block").remove();
         $(".text-success").remove();
         $(".text-danger").remove();
+    }
+    form.submit(function() {
+        error_remove();
+        $("#update_in").attr('disabled', 'disabled');
         $(this).ajaxSubmit(options);
         return false;
     });
 
     $("#cancel_in").on("click", function() {
         form.resetForm();
+        error_remove();
+        $("#update_img").attr("src", form_img);
     });
 
     function errorResponse(response, statusText, xhr, $form) {
         $('.update_error').html("<span class='text-danger'>Error.</span>");
+        $("#update_in").removeAttr('disabled', 'disabled');
         var errors = $.parseJSON(response.responseText);
         for (key in errors) {
             var contact = "#contact-" + key + " div";
             $(contact).addClass('has-error');
             $(contact).last().append('<div class="help-block">' + errors[key][0] + '</div>');
         }
-        $("#update_in").removeAttr('disabled', 'disabled');
     }
 
     function successResponse(response, statusText, xhr, $form) {
         form.clearForm();
         for (el in response) {
+            if (el == "photo") {
+                continue;
+            }
             var input_el = "#id_" + el;
             $(input_el).val(response[el]);
         }
+        $("#update_img").attr("src", MEDIA_URL + response.photo);
+        $("#update_img_link").attr("href", MEDIA_URL + response.photo);
+        $("#update_img_link").html(MEDIA_URL + response.photo);
         $('.update_success').html("<span class='text-success'>Success.</span>");
         $("#update_in").removeAttr('disabled', 'disabled');
     }
@@ -76,7 +88,7 @@ $(document).ready(function() {
         }
     }
 
-    $("#update_file").change(function(){
+    $("#id_photo").change(function(){
         readURL(this);
     });
 })
