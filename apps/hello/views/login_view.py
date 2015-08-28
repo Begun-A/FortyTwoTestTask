@@ -2,8 +2,8 @@ from django.views.generic import RedirectView
 from django.views.generic.edit import FormView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import login, logout
-from apps.hello.forms import LoginForm
-from bl.mixins import AjaxableResponseMixin
+from hello.forms import LoginForm
+from hello.mixins import AjaxableResponseMixin
 
 
 class LoginView(AjaxableResponseMixin, FormView):

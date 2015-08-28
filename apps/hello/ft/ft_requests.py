@@ -2,8 +2,8 @@ from selenium.webdriver.common.keys import Keys
 from django.core.urlresolvers import reverse
 
 from apps import FAKE_PATH_LIST
-from apps.hello.models import LogWebRequest
-from .ft import BaseConfigTestCase
+from hello.models import LogWebRequest
+from hello.ft import BaseConfigTestCase
 
 
 class LogWebRequestIntegrationTest(BaseConfigTestCase):

@@ -1,4 +1,7 @@
 """
+This test do not wok on getBarista. Need to run it manually.
+
+
 import datetime
 import subprocess
 import os

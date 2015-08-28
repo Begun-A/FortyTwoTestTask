@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 
 from apps import TEST_DATA
-from .ft import BaseConfigTestCase
+from hello.ft import BaseConfigTestCase
 
 
 class ContactIntegrationTest(BaseConfigTestCase):

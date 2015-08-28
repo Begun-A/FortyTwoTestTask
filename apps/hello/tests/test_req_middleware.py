@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 
 from apps import FAKE_PATH_LIST
-from bl.middleware import LogWebReqMiddleware
+from hello.middleware import LogWebReqMiddleware
 from hello.models import LogWebRequest
 from hello.views import LogRequestView
 

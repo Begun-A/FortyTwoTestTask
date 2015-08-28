@@ -4,7 +4,7 @@ from django.core import serializers
 from django.views.generic import UpdateView
 from django.core.urlresolvers import reverse_lazy
 
-from bl.mixins import AjaxableResponseMixin, LoginRequiredMixin
+from hello.mixins import AjaxableResponseMixin, LoginRequiredMixin
 from hello.models import Contact
 from hello.forms import ContactForm
 

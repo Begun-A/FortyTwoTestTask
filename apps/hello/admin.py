@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Contact, LogWebRequest
+from hello.models import Contact, LogWebRequest, SignalLog
 
 admin.site.register(Contact)
 admin.site.register(LogWebRequest)
+admin.site.register(SignalLog)

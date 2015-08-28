@@ -1,5 +1,5 @@
 from django import forms
-from .models import Contact
+from hello.models import Contact
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import gettext as _
 

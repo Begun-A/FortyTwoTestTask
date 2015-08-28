@@ -3,8 +3,8 @@ from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 
 from apps import FAKE_PATH_LIST
-from apps.hello.models import LogWebRequest
-from apps.hello.views import LogRequestView
+from hello.models import LogWebRequest
+from hello.views import LogRequestView
 
 
 class LogRequestTest(TestCase):

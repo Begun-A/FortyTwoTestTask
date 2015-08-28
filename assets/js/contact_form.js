@@ -68,7 +68,7 @@ $(document).ready(function() {
         $("#update_img").attr("src", MEDIA_URL + response.photo);
         $("#update_img_link").attr("href", MEDIA_URL + response.photo);
         $("#update_img_link").html(MEDIA_URL + response.photo);
-        $('.update_success').html("<span class='text-success'>Success.</span>");
+        $('.update_success').html("<span class='text-success'>Changes have been save</span>");
         $("#update_in").removeAttr('disabled', 'disabled');
     }
 
