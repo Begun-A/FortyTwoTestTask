@@ -1,5 +1,8 @@
 import json
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.core.urlresolvers import reverse_lazy
 
 
 class JsonResponse(HttpResponse):
@@ -16,6 +19,14 @@ class JsonResponse(HttpResponse):
             status=status,
             content_type=content_type,
         )
+
+
+class LoginRequiredMixin(object):
+    """Ensures that user must be authenticated in order to access view."""
+
+    @method_decorator(login_required(login_url=reverse_lazy('login')))
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
 
 class AjaxableResponseMixin(object):
