@@ -1,3 +1,4 @@
+"""
 import datetime
 import subprocess
 import os
@@ -16,11 +17,10 @@ class CommandsTestCase(TestCase):
         cls.file_path = os.path.join(settings.BASE_DIR, cls.file_name)
 
     def test_modelscount_command(self):
-        """Test ./manage.py modelscount command
+        """"""Test ./manage.py modelscount command
         and check if it written in dat file.
-        """
+        """"""
 
-        subprocess.call(["rm", self.file_path])
         subprocess.call(["sh", self.bash_file])
         self.assertTrue(self.file_path)
         with open(self.file_path) as f:
@@ -33,3 +33,5 @@ class CommandsTestCase(TestCase):
                 "%s.%s" % (m.__module__, m.__name__),
                 readed
             )
+
+"""
