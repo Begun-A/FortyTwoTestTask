@@ -28,7 +28,6 @@ $(document).ready(function() {
             staged_count = 0;
         }
     });
-
     var update_requests = function() {
         $.ajax({
             method: "GET",
