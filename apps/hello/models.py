@@ -39,6 +39,7 @@ class LogWebRequest(models.Model):
     status_code = models.IntegerField()
     remote_addr = models.IPAddressField()
     time = models.DateTimeField(auto_now=True)
+    priority = models.IntegerField(default=0)
 
 
 class SignalLog(models.Model):

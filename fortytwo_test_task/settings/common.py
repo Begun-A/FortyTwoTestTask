@@ -35,6 +35,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    # 'south',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -65,7 +66,7 @@ WSGI_APPLICATION = 'fortytwo_test_task.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'db_update.sqlite3'),
     }
 }
 
@@ -123,6 +124,11 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, 'templates'),
+)
+
+# Fixture folders
+FIXTURE_DIRS = (
+    os.path.join(BASE_DIR, 'apps/hello/fixtures'),
 )
 
 # Turn off south during test

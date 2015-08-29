@@ -15,12 +15,13 @@
         <table id="#refreshed_req" class="table table-hover">
             <thead>
                 <tr>
-                    <th>Id</th>
+                    <th data-sort="int">Id</th>
                     <th>Method</th>
                     <th>Path</th>
                     <th>Status</th>
                     <th>Remote addr</th>
                     <th>Time</th>
+                    <th>Priority</th>
                 </tr>
             </thead>
             {% autoescape off %}
@@ -33,6 +34,7 @@
                     <td>{{ log_request.status_code }}</td>
                     <td>{{ log_request.remote_addr }}</td>
                     <td>{{ log_request.time|date:"Y-m-d\TH:i:s" }}</td>
+                    <td id="sort_prio">{{ log_request.priority }}</td>
                 </tr>
             {% endfor %}
             </tbody>  
