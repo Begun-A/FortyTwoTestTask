@@ -35,7 +35,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    # 'south',
+    'south',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -124,11 +124,6 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, 'templates'),
-)
-
-# Fixture folders
-FIXTURE_DIRS = (
-    os.path.join(BASE_DIR, 'apps/hello/fixtures'),
 )
 
 # Turn off south during test

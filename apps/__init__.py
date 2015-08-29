@@ -1,21 +1,21 @@
-import os
-import json
+TEST_DATA = {
+    "bio": "self.educated man, try to find himself in web development.",
+    "first_name": "Bogdan",
+    "last_name": "Kurinnyi",
+    "photo": None,
+    "other": "Some other contacts",
+    "skype": "DeV1doR",
+    "birth_date": "1994-07-26",
+    "jabber": "dev1dor@jabber.ua",
+    "email": "dev1dor@ukr.net",
+    "password": "qwerty"
+}
 
-
-with open(
-    os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'hello/fixtures/initial_data.json'
-    )
-) as test_data:
-    initial_data = json.load(test_data)
-
-
-TEST_DATA = initial_data[1]['fields']
-TEST_DATA['password'] = 'qwerty'
-
-ADMIN_DATA = initial_data[0]['fields']
-ADMIN_DATA['password'] = 'admin'
+ADMIN_DATA = dict(
+    username="admin@admin.com",
+    email="admin@admin.com",
+    password="admin"
+)
 
 FAKE_PATH_LIST = [
     '/fefw',

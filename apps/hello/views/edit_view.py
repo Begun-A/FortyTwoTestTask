@@ -8,14 +8,12 @@ from hello.mixins import AjaxableResponseMixin, LoginRequiredMixin
 from hello.models import Contact
 from hello.forms import ContactForm
 
-from apps import initial_data
-
 
 class EditView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
 
     template_name = 'edit.html'
     model = Contact
-    pk_url_kwarg = initial_data[0]['pk']
+    pk_url_kwarg = 1
     context_object_name = 'contact'
     form_class = ContactForm
     success_url = reverse_lazy('edit')
