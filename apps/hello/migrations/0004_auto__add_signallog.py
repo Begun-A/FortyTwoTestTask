@@ -8,7 +8,14 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        pass
+        # Adding model 'SignalLog'
+        db.create_table('SignalLog', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('action', self.gf('django.db.models.fields.CharField')(max_length=16)),
+            ('model', self.gf('django.db.models.fields.CharField')(max_length=25)),
+            ('time', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+        ))
+        db.send_create_signal(u'hello', ['SignalLog'])
 
 
     def backwards(self, orm):
