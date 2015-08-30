@@ -1,7 +1,7 @@
 from django.test import TestCase
 from hello.models import Contact, SignalLog
 
-from apps import TEST_DATA
+from apps import FAKE_DATA
 
 
 class SignalUnitTest(TestCase):
@@ -14,9 +14,7 @@ class SignalUnitTest(TestCase):
         self.model_name = self.model.__name__
 
     def _create_model(self):
-        data = TEST_DATA.copy()
-        data.pop("password", None)
-        self.model(**data).save()
+        self.model(**FAKE_DATA).save()
 
     def test_check_signal_after_post_complete(self):
         """Create some information and check it in signal log.

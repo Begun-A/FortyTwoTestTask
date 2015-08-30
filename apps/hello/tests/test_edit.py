@@ -5,8 +5,6 @@ from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from apps import TEST_DATA, ADMIN_DATA
-
 
 class EditFormTest(TestCase):
     """Check for form recieve, when open session with user.
@@ -16,14 +14,10 @@ class EditFormTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.fake_path = reverse('edit')
-        self.user = User.objects.create_user(
-            username=TEST_DATA['first_name'],
-            email=TEST_DATA['email'],
-            password=TEST_DATA['password']
-        )
+        self.user = User.objects.last()
         self.client.login(
-            username=ADMIN_DATA['username'],
-            password=ADMIN_DATA['password']
+            username="admin@admin.com",
+            password="admin"
         )
 
     def test_if_form_is_present_on_contact_page(self):

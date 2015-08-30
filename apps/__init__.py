@@ -1,21 +1,5 @@
-TEST_DATA = {
-    "bio": "self.educated man, try to find himself in web development.",
-    "first_name": "Bogdan",
-    "last_name": "Kurinnyi",
-    "photo": None,
-    "other": "Some other contacts",
-    "skype": "DeV1doR",
-    "birth_date": "1994-07-26",
-    "jabber": "dev1dor@jabber.ua",
-    "email": "dev1dor@ukr.net",
-    "password": "qwerty"
-}
+import datetime
 
-ADMIN_DATA = dict(
-    username="admin@admin.com",
-    email="admin@admin.com",
-    password="admin"
-)
 
 FAKE_PATH_LIST = [
     '/fefw',
@@ -29,3 +13,16 @@ FAKE_PATH_LIST = [
     '/avaba-kedabra/',
     '/****/'
 ]
+FAKE_DATA = {
+    u"first_name": u"hello",
+    u"last_name": u"world",
+    u"skype": u"gogogo",
+    u"birth_date": unicode(
+        datetime.datetime.utcnow().strftime("%Y-%m-%d")
+    ),
+    u"jabber": u"jaber@jaber.com",
+    u"email": u"email@email.com",
+    u"bio": u"",
+    u"other": u"",
+    u"photo": u""
+}
