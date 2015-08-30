@@ -1,17 +1,35 @@
 [
     {
-        "model": "hello.contact",
-        "pk": 1,
+        "pk": 1, 
+        "model": "hello.contact", 
         "fields": {
-            "first_name": "Bogdan",
-            "last_name": "Kurinnyi",
-            "birth_date": "1994-07-26",
-            "bio": "self.educated man, try to find himself in web development.",
-            "contacts": "063-981-33-35",
-            "email": "dev1dor@ukr.net",
-            "jabber": "dev1dor@jabber.ua",
-            "skype": "DeV1doR",
-            "other": "Some other contacts" 
+            "bio": "self.educated man, try to find himself in web development.", 
+            "first_name": "Bogdan", 
+            "last_name": "Kurinnyi", 
+            "photo": null, 
+            "other": "Some other contacts", 
+            "skype": "DeV1doR", 
+            "birth_date": "1994-07-26", 
+            "jabber": "dev1dor@jabber.ua", 
+            "email": "dev1dor@ukr.net"
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "admin@admin.com", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": true, 
+            "is_staff": true, 
+            "last_login": "2015-08-25T11:25:28.364Z", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "pbkdf2_sha256$12000$psRON24AJh3m$sRcWdOtb/KQLjhDu99pBJuHXRQBhysBQTrkn8+kcqxg=", 
+            "email": "admin@admin.com", 
+            "date_joined": "2015-08-25T11:25:28.364Z"
         }
     }
 ]

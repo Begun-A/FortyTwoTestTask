@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ contact.first_name }} {{ contact.last_name }}{% endblock title %}
+
+{% block extra_head %}
+{% load staticfiles edit_link %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+<link rel="stylesheet" href="{% static 'css/screen.css' %}" />
+{% endblock extra_head %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <h3>42 Coffe Cups Test Assignment</h3>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-4"><b>Name: </b><span id="first_name">{{ contact.first_name }}</span></div>
+            <div class="col-md-4"><b>Contacts</b></div>
+            {% if user.is_authenticated %}
+            <div class="col-md-1">
+                <form class="form" action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <a href="javascript:;" onclick="parentNode.submit();">logout</a>
+                </form>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'edit' %}">Edit </a><a href="{% edit_link contact %}">(admin)</a>
+            </div>
+            {% else %}
+            <div class="col-md-4">
+                <a href="{% url 'login' %}">Login</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col-md-4"><b>Last name: </b><span id="last_name">{{ contact.last_name }}</span></div>
+            <div class="col-md-4"><b>Email: </b><span id="email">{{ contact.email }}</span></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4"><b>Date of birth: </b><span id="birth_date">{{ contact.birth_date|date:"Y-m-d" }}</span></div>
+            <div class="col-md-4"><b>Jabber: </b><span id="jabber">{{ contact.jabber }}</span></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <b>Photo: </b>
+            </div>
+            <div class="col-md-4"><b>Skype: </b><span id="skype">{{ contact.skype }}</span></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+            {% if contact.photo %}
+                <img id="update_img" src="{{ MEDIA_URL }}{{ contact.photo }}" />
+            {% endif %}
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12"><b>Other contacts: </b><span id="other">{{ contact.other }}</span></div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-12"><b>Bio: </b><span id="bio">{{ contact.bio }}</span></div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-1"><a href="{% url 'requests' %}">requests</a></div>
+        </div>
+        <br>
+    </div>
+{% endblock content %}

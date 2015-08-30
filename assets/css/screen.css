@@ -1,8 +1,12 @@
-table {
-    table-layout: fixed;
-    width: 100%;
+.m-block {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
-td {
+#update_img {
+    height: 200px;
+    width: 200px;
+}
+.col-md-4 {
     word-wrap: break-word;
-    padding: 10px;
-} 
+    padding-top: 20px;
+}
