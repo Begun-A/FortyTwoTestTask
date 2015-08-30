@@ -2,7 +2,8 @@ $(document).ready(function() {
     var title = document.title,
         staged_count = 0,
         hidden, 
-        visibilityChange; 
+        visibilityChange,
+        income_count; 
         
     if (typeof document.hidden !== "undefined") { 
         hidden = "hidden";
@@ -33,9 +34,23 @@ $(document).ready(function() {
             method: "GET",
             url: "/requests/",
             cache: false,
-            success: function(data) {
-                $('tbody').replaceWith($(data).find('tbody'));
-                var income_count = $('#req_id').html();
+            success: function(response) {
+                if (income_count != response[0].pk) {
+                    $('tbody').empty();
+                    $.each(response, function(i, item) {
+                        var tr = "<tr>";
+                        tr +=       "<td id='req_id'>" + item.pk + "</td>";
+                        tr +=       "<td>" + item.fields.method + "</td>";
+                        tr +=       "<td>" + item.fields.path + "</td>";
+                        tr +=       "<td>" + item.fields.status_code + "</td>";
+                        tr +=       "<td>" + item.fields.remote_addr + "</td>";
+                        tr +=       "<td>" + item.fields.time + "</td>";
+                        tr +=       "<td>" + item.fields.priority + "</td>";
+                        tr +=    "</tr>";
+                        $('tbody').append(tr);
+                    });
+                }
+                income_count = $('#req_id').html();
                 if (staged_count > 0 && income_count > staged_count) {
                     var count_req = income_count - staged_count;
                     document.title  = "(" + count_req +  ") " + title;
