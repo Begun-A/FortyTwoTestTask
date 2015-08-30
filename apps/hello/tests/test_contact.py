@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from hello.models import Contact
 from hello.views import ContactView
 
-from apps import FAKE_DATA
+from hello.factories import FAKE_DATA
 
 
 class ContactUnitTest(TestCase):

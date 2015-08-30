@@ -20,7 +20,7 @@ $(document).ready(function() {
     }
     document.addEventListener(visibilityChange, function() {
         if (document.visibilityState == hidden) {
-            staged_count = $('#req_id').html();
+            staged_count = $('.req_id').html();
         }
         if (document.visibilityState == "visible") {
             setTimeout(function() {
@@ -39,7 +39,7 @@ $(document).ready(function() {
                     $('tbody').empty();
                     $.each(response, function(i, item) {
                         var tr = "<tr>";
-                        tr +=       "<td id='req_id'>" + item.pk + "</td>";
+                        tr +=       "<td class='req_id'>" + item.pk + "</td>";
                         tr +=       "<td>" + item.fields.method + "</td>";
                         tr +=       "<td>" + item.fields.path + "</td>";
                         tr +=       "<td>" + item.fields.status_code + "</td>";
@@ -50,7 +50,7 @@ $(document).ready(function() {
                         $('tbody').append(tr);
                     });
                 }
-                income_count = $('#req_id').html();
+                income_count = $('.req_id').html();
                 if (staged_count > 0 && income_count > staged_count) {
                     var count_req = income_count - staged_count;
                     document.title  = "(" + count_req +  ") " + title;

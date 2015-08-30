@@ -1,9 +1,8 @@
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from apps import FAKE_PATH_LIST
+from hello.factories import FAKE_PATH_LIST
 from hello.middleware import LogWebReqMiddleware
-from hello.models import LogWebRequest
 from hello.views import LogRequestView
 
 
@@ -39,44 +38,4 @@ class LogWebRequestMiddlewareTest(TestCase):
                     income['request'], income['response']
                 ), income['response']
             ), fake_actions
-        )
-
-    def test_save_of_10_lwm_requests_in_db(self):
-        """Check some values of 10 income requests which must
-        coincide with db stored request data.
-        """
-        # need for store data
-        self.test_response_in_lwrm_process_response()
-        # save income req and res
-        fake_actions = self.get_req_and_res()[::-1]
-        # get saved income req and res
-        lwr_queryset = LogWebRequest.objects.order_by('-id')[:10]
-
-        map(
-            lambda income, db: self.assertEqual(
-                income['response'].status_code, db.status_code
-            ),
-            fake_actions,
-            lwr_queryset
-        )
-        map(
-            lambda income, db: self.assertEqual(
-                income['request'].method, db.method
-            ),
-            fake_actions,
-            lwr_queryset
-        )
-        map(
-            lambda income, db: self.assertEqual(
-                income['request'].path, db.path
-            ),
-            fake_actions,
-            lwr_queryset
-        )
-        map(
-            lambda income, db: self.assertEqual(
-                income['request'].META['REMOTE_ADDR'], db.remote_addr
-            ),
-            fake_actions,
-            lwr_queryset
         )

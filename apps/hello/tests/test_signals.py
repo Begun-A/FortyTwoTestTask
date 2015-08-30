@@ -1,7 +1,7 @@
 from django.test import TestCase
-from hello.models import Contact, SignalLog
 
-from apps import FAKE_DATA
+from hello.models import Contact, SignalLog
+from hello.factories import FAKE_DATA
 
 
 class SignalUnitTest(TestCase):

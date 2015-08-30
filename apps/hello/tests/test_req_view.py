@@ -1,10 +1,12 @@
+import json
+from django.core import serializers
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 
-from apps import FAKE_PATH_LIST
 from hello.models import LogWebRequest
 from hello.views import LogRequestView
+from hello.factories import FAKE_PATH_LIST
 
 
 class LogRequestTest(TestCase):
@@ -26,14 +28,63 @@ class LogRequestTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertHTMLEqual(response.template_name[0], self.requests_html)
 
+    @staticmethod
+    def _serialize_queryset(query_json):
+        query_dict = json.loads(query_json)
+        fields_json = []
+        for q in query_dict:
+            import dateutil.parser
+            datestring = q['fields']['time']
+            formatted_date = dateutil.parser.parse(datestring)
+            fields = q.pop("fields")
+            fields['pk'] = q['pk']
+            fields['time'] = formatted_date.strftime('%Y-%m-%dT%H:%M:%S')
+            fields_json.append(fields)
+        return fields_json
+
     def test_by_client_get_10_records_from_db(self):
         """See results of 10 requests in the page.
         """
-        (lambda: [self.client.get(path) for path in FAKE_PATH_LIST])()
+        for path in FAKE_PATH_LIST:
+            self.client.get(path=path)
+
+        # check if it 10 in db
+        self.assertEqual(LogWebRequest.objects.count(), 10)
+        queryset = LogWebRequest.objects.order_by('id')[:10]
+
+        response = self.client.get(path=self.fake_path)
+
+        # we make request on /requests/ page so one request added
+        self.assertEqual(LogWebRequest.objects.count(), 11)
+
+        # 11 dont be rendered because the page will be refreshed only when ajax
+        self.assertNotIn(str(11), response.content)
+
+        query_json = serializers.serialize('json', queryset)
+        db_fields = LogRequestTest._serialize_queryset(query_json)
+        for db_field in db_fields:
+            for val in db_field.values():
+                self.assertIn(str(val), response.content)
+
+    def test_ajax_10_response_on_request_page(self):
+        """Check if json is ansvered and json.
+        """
+        # make sme fake req
+        for path in FAKE_PATH_LIST:
+            self.client.get(path=path)
+
+        # get json info about it
         response = self.client.get(
-            self.fake_path,
+            path=self.fake_path,
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
+        self.assertEqual(response.get('content-type'), 'application/json')
+        response_f_cont = LogRequestTest._serialize_queryset(response.content)
+
+        # check it with db
         queryset = LogWebRequest.objects.order_by('-id')[:10]
-        self.assertEqual(response.status_code, 200)
-        map(lambda db: self.assertIn(str(db.path), response.content), queryset)
+        self.assertEqual(LogWebRequest.objects.count(), 10)
+        query_json = serializers.serialize('json', queryset)
+        db_content = LogRequestTest._serialize_queryset(query_json)
+        for x in xrange(10):
+            self.assertDictEqual(db_content[x], response_f_cont[x])

@@ -25,5 +25,4 @@ class LogRequestView(ListView):
                 content=data,
                 status=200
             )
-        else:
-            return super(LogRequestView, self).get(request, *args, **kwargs)
+        return super(LogRequestView, self).get(request, *args, **kwargs)
