@@ -91,7 +91,8 @@ class LoginUnitTest(TestCase):
         self.assertIsNotNone(response.content)
         res_cont = json.loads(response.content)
         try:
-            map(lambda error: self.assertIsNotNone(res_cont[error]), errors)
+            for error in errors:
+                self.assertIsNotNone(res_cont[error])
         except KeyError:
             pass
 

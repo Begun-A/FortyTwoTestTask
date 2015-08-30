@@ -12,6 +12,7 @@
 <script type="text/javascript" src="{% static 'js/jquery.form.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/contact_form.js' %}"></script>
+<script type="text/javascript">var MEDIA_URL = "{{MEDIA_URL}}";</script>
 {% endblock extra_head %}
 
 {% block content %}
@@ -20,7 +21,7 @@
             <h3>42 Coffe Cups Test Assignment</h3>
         </div>
         <hr>
-        <form id="update_contact" class="form-horizontal" action="{% url 'edit' %}" ectype="multipart/form-data">
+        <form id="update_contact" class="form-horizontal" action="{% url 'edit' contact.id %}" ectype="multipart/form-data">
             <div class="form-group">
                 <div id="contact-{{ form.first_name.name }}">
                     <label class="control-label col-xs-2">{{ form.first_name.label }}</label>
@@ -29,7 +30,7 @@
                     </div>
                 </div>
                 <div id="contact-{{ form.email.name }}">
-                    <label class="control-label col-xs-3">{{ form.email.label }}</label>
+                    <label class="control-label col-xs-2">{{ form.email.label }}</label>
                     <div class="col-xs-2">
                         {{ form.email }}
                     </div>
@@ -43,7 +44,7 @@
                     </div>
                 </div>
                 <div id="contact-{{ form.jabber.name }}">
-                    <label class="control-label col-xs-3">{{ form.jabber.label }}</label>
+                    <label class="control-label col-xs-2">{{ form.jabber.label }}</label>
                     <div class="col-xs-2">
                         {{ form.jabber }}
                     </div>
@@ -57,7 +58,7 @@
                     </div>
                 </div>
                 <div id="contact-{{ form.skype.name }}">
-                    <label class="control-label col-xs-3">{{ form.skype.label }}</label>
+                    <label class="control-label col-xs-2">{{ form.skype.label }}</label>
                     <div class="col-xs-2">
                         {{ form.skype }}
                     </div>
@@ -66,18 +67,18 @@
             <div class="form-group">
                 <div id="contact-{{ form.photo.name }}">
                     <label class="control-label col-xs-2">{{ form.photo.label }}</label>
-                    <div class="col-xs-3">
+                    <div class="col-xs-2">
                         {{ form.photo }}
                         {% if contact.photo != "" %}
-                            <img id="update_img" class="img-thumbnail" src="{{ MEDIA_URL }}{{ contact.photo }}"/>
+                            <img id="update_img" class="img-responsive" src="{{ MEDIA_URL }}{{ contact.photo }}"/>
                         {% else %}
-                            <img id="update_img" class="img-thumbnail" src=""/>
+                            <img id="update_img" class="img-responsive" src=""/>
                         {% endif %}
                     </div>
                 </div>
                 <div id="contact-{{ form.other.name }}">
-                    <div class="col-xs-2"></div>
-                    <div class="col-xs-3">
+                    <div class="col-xs-1"></div>
+                    <div class="col-xs-2">
                         <label>{{ form.other.label }}</label>
                         {{ form.other }}
                     </div>
@@ -85,8 +86,8 @@
             </div>
             <div class="form-group">
                 <div id="contact-{{ form.bio.name }}">
-                    <div class="col-xs-3 col-xs-offset-4"></div>
-                    <div class="col-xs-3">
+                    <div class="col-xs-2 col-xs-offset-3"></div>
+                    <div class="col-xs-2">
                         <label>{{ form.bio.label }}</label>
                         {{ form.bio }}
                     </div>

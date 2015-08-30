@@ -20,6 +20,7 @@ class ContactUnitTest(TestCase):
         self.factory = RequestFactory()
         self.template = 'contact.html'
         self.model = Contact
+        self.pattern = ('hello', 'contact')
 
     def test_fixture_load_data(self):
         """Test, if fixture load data.
@@ -36,12 +37,14 @@ class ContactUnitTest(TestCase):
     def test_if_we_can_add_data_to_db(self):
         """Test if we can add data and check in db.
         """
-        self.model(**FAKE_DATA).save()
+        model = self.model(**FAKE_DATA)
+        model.save()
         self.assertEqual(self.model.objects.count(), 2)
         db_data = json.loads(
             serializers.serialize('json', [self.model.objects.last(), ])
         )[0]['fields']
         self.assertDictEqual(db_data, FAKE_DATA)
+        model.delete()
 
     def test_data_deletion_in_db(self):
         """Test if data deleted in db.
@@ -80,18 +83,15 @@ class ContactUnitTest(TestCase):
             self.template
         )
 
-    def test_admin_actions_of_this_model(self):
-        """Delete, add, and update of data from admin.
+    def test_admin_delete_of_model(self):
+        """Delete data from admin.
         """
-        pattern = ('hello', 'contact')
-        admin_u = "admin@admin.com"
-        admin_p = "admin"
-        self.client.login(
-            username=admin_u,
-            password=admin_p
+        delete_path = reverse('admin:%s_%s_delete' % self.pattern, args=(1,))
+        response = self.client.login(
+            username="admin@admin.com",
+            password="admin"
         )
-        delete_path = reverse('admin:%s_%s_delete' % pattern, args=(1,))
-        self.client.post(
+        response = self.client.post(
             path=delete_path,
             data={
                 u'action': [u'delete_selected'],
@@ -99,25 +99,39 @@ class ContactUnitTest(TestCase):
                 u'post': [u'yes']
             }
         )
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(self.model.objects.count(), 0)
 
-        add_path = reverse('admin:%s_%s_add' % pattern)
-        self.client.post(
-            path=add_path,
-            data=FAKE_DATA
+    def test_admin_add_to_model(self):
+        """Add data from admin.
+        """
+        add_path = reverse('admin:%s_%s_add' % self.pattern)
+        self.client.login(
+            username="admin@admin.com",
+            password="admin"
         )
-        self.assertEqual(self.model.objects.count(), 1)
+        response = self.client.post(path=add_path, data=FAKE_DATA)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.model.objects.count(), 2)
         db_data = json.loads(
             serializers.serialize('json', [self.model.objects.last(), ])
         )[0]['fields']
         self.assertDictEqual(db_data, FAKE_DATA)
 
-        update_path = reverse('admin:%s_%s_change' % pattern, args=(1,))
+    def test_admin_update_of_model(self):
+        """Update data from admin.
+        """
+        update_path = reverse('admin:%s_%s_change' % self.pattern, args=(1,))
+        self.client.login(
+            username="admin@admin.com",
+            password="admin"
+        )
         FAKE_DATA["first_name"] = "Human"
-        self.client.post(
+        response = self.client.post(
             path=update_path,
             data=FAKE_DATA
         )
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(self.model.objects.count(), 1)
         db_data = json.loads(
             serializers.serialize('json', [self.model.objects.last(), ])

@@ -3,7 +3,9 @@ import json
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
+
+from hello.views import EditView
 
 
 class EditFormTest(TestCase):
@@ -13,15 +15,15 @@ class EditFormTest(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
-        self.fake_path = reverse('edit')
+        self.fake_path = reverse('edit', kwargs={"pk": 1})
         self.user = User.objects.last()
         self.client.login(
             username="admin@admin.com",
             password="admin"
         )
 
-    def test_if_form_is_present_on_contact_page(self):
-        """Must be changed the template and new form present.
+    def test_if_form_is_present_on_page(self):
+        """Must be rendered the form.
         """
         response = self.client.get(path=self.fake_path)
         self.assertEqual(response.status_code, 200)
@@ -36,10 +38,8 @@ class EditFormTest(TestCase):
             'id="contact-skype"',
             'id="contact-other"'
         ]
-        map(
-            lambda form_id: self.assertIn(form_id, response.render().content),
-            ids
-        )
+        for form_id in ids:
+            self.assertIn(form_id, response.render().content)
         return response
 
     def test_check_valid_post_request_and_get_changed_data_on_page(self):
@@ -61,11 +61,9 @@ class EditFormTest(TestCase):
         content = [el for el in json.loads(response.content).values()]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('content-type'), 'application/json')
-        new_res = self.test_if_form_is_present_on_contact_page()
-        map(
-            lambda el: self.assertIn(el, new_res.content),
-            content
-        )
+        new_res = self.test_if_form_is_present_on_page()
+        for el in content:
+            self.assertIn(el, new_res.content)
 
     def test_check_invalid_post_request_and_get_form_errors(self):
         """Check post request with invalid data and get errors from form.
@@ -94,7 +92,20 @@ class EditFormTest(TestCase):
         content = [el for el in json.loads(response.content).values()]
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.get('content-type'), 'application/json')
-        map(
-            lambda el: self.assertIn(el[0], errors),
-            content
+        for el in content:
+            self.assertIn(el[0], errors)
+
+    def test_anonim_cant_edit_page(self):
+        """Check if anonim can't edit page while not authenticated.
+        It must go to /login/.
+        """
+        request = self.factory.post(
+            path=self.fake_path,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+            data={}
         )
+        request.user = AnonymousUser()
+        response = EditView.as_view()(request)
+        self.assertEqual(response.status_code, 302)
+        redirect_url = "%s?next=%s" % (reverse('login'), self.fake_path)
+        self.assertEqual(redirect_url, response.url)

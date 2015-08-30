@@ -54,14 +54,14 @@ class ContactForm(forms.ModelForm):
             }),
             "bio": forms.Textarea(attrs={
                 "class": bs3_input_class,
-                "style": "width: 242px; height: 112px;"
+                "style": "width: 300px; height: 130px;"
             }),
             "email": forms.EmailInput(attrs={"class": bs3_input_class}),
             "jabber": forms.EmailInput(attrs={"class": bs3_input_class}),
             "skype": forms.TextInput(attrs={"class": bs3_input_class}),
             "other": forms.Textarea(attrs={
                 "class": bs3_input_class,
-                "style": "width: 242px; height: 112px;"
+                "style": "width: 300px; height: 130px;"
             }),
         }
         labels = {

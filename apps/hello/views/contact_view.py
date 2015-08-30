@@ -8,7 +8,8 @@ class ContactView(DetailView):
 
     template_name = 'contact.html'
     model = Contact
-    pk_url_kwarg = 1
+    email = "dev1dor@ukr.net"
+    pk_url_kwarg = model.objects.get(email=email).pk
     context_object_name = 'contact'
 
     def get_object(self):

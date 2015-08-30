@@ -26,10 +26,8 @@ class LogWebRequestIntegrationTest(BaseConfigTestCase):
             # step on another tab in browser
             body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + 't')
-            self.driver.implicitly_wait(10)
             # go to this link
             self.driver.get('%s%s' % (self.live_server_url, fake_path))
-            self.driver.implicitly_wait(10)
             # return back, see if we get new result
             body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + Keys.F4)
@@ -62,17 +60,14 @@ class LogWebRequestIntegrationTest(BaseConfigTestCase):
             # step on another tab in browser
             body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + 't')
-            self.driver.implicitly_wait(10)
             # go to this link
             self.driver.get('%s%s' % (self.live_server_url, fake_path))
-            self.driver.implicitly_wait(10)
             depth = depth + 1
 
         # return back, see if we get new result
         for d in xrange(depth):
             body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + Keys.F4)
-            self.driver.implicitly_wait(10)
         # ipdb.set_trace()
         new_title = self.driver.title
         self.assertNotEqual(init_title, new_title)
