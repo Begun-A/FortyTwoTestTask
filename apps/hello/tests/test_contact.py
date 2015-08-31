@@ -21,6 +21,10 @@ class ContactUnitTest(TestCase):
         self.template = 'contact.html'
         self.model = Contact
         self.pattern = ('hello', 'contact')
+        self.client.login(
+            username="admin@admin.com",
+            password="admin"
+        )
 
     def test_fixture_load_data(self):
         """Test, if fixture load data.
@@ -67,10 +71,8 @@ class ContactUnitTest(TestCase):
         )[0]['fields']
 
         self.assertEqual(response.context_data['contact'], contact)
-        map(
-            lambda el: self.assertIn(el, response_content),
-            [el for el in db_data.values()]
-        )
+        for value in [el for el in db_data.values()]:
+            self.assertIn(value, response_content)
 
     def test_contact_get_ok_request(self):
         """Check if page get status OK and response template.
@@ -87,10 +89,6 @@ class ContactUnitTest(TestCase):
         """Delete data from admin.
         """
         delete_path = reverse('admin:%s_%s_delete' % self.pattern, args=(1,))
-        response = self.client.login(
-            username="admin@admin.com",
-            password="admin"
-        )
         response = self.client.post(
             path=delete_path,
             data={
@@ -106,10 +104,6 @@ class ContactUnitTest(TestCase):
         """Add data from admin.
         """
         add_path = reverse('admin:%s_%s_add' % self.pattern)
-        self.client.login(
-            username="admin@admin.com",
-            password="admin"
-        )
         response = self.client.post(path=add_path, data=FAKE_DATA)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.model.objects.count(), 2)
@@ -122,10 +116,6 @@ class ContactUnitTest(TestCase):
         """Update data from admin.
         """
         update_path = reverse('admin:%s_%s_change' % self.pattern, args=(1,))
-        self.client.login(
-            username="admin@admin.com",
-            password="admin"
-        )
         FAKE_DATA["first_name"] = "Human"
         response = self.client.post(
             path=update_path,

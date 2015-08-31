@@ -1,7 +1,7 @@
 from selenium.webdriver.common.keys import Keys
 from django.core.urlresolvers import reverse
 
-from apps import FAKE_PATH_LIST
+from hello.factories import FAKE_PATH_LIST
 from hello.models import LogWebRequest
 from hello.ft import BaseConfigTestCase
 
@@ -38,15 +38,12 @@ class LogWebRequestIntegrationTest(BaseConfigTestCase):
                 for each in queryset._meta.fields
             ]
             self.driver.refresh()
-            first_row = self.driver.find_elements_by_tag_name('tr')[1].text
-            map(
-                lambda row: self.assertIn(
-                    unicode(row), first_row
-                ), last_rec[:3]
-            )
+            first_row = self.driver.find_elements_by_tag_name('tr')[2].text
+            for row in last_rec[:3]:
+                self.assertIn(unicode(row), first_row)
 
-    def test_title_of_3_req(self):
-        """Test 3 requests and check title if it changed.
+    def test_title_of_10_req(self):
+        """Test 10 requests and check title if it changed.
         """
 
         self.driver.get('%s%s' % (self.live_server_url, self.fake_path))
@@ -54,21 +51,20 @@ class LogWebRequestIntegrationTest(BaseConfigTestCase):
 
         import time
         time.sleep(2)
+
         init_title = self.driver.title
-        depth = 0
-        for fake_path in FAKE_PATH_LIST[:3]:
+        for fake_path in FAKE_PATH_LIST:
             # step on another tab in browser
             body = self.driver.find_element_by_tag_name('body')
             body.send_keys(Keys.CONTROL + 't')
             # go to this link
             self.driver.get('%s%s' % (self.live_server_url, fake_path))
-            depth = depth + 1
+            time.sleep(1)
 
         # return back, see if we get new result
-        for d in xrange(depth):
-            body = self.driver.find_element_by_tag_name('body')
-            body.send_keys(Keys.CONTROL + Keys.F4)
-        # ipdb.set_trace()
+        body = self.driver.find_element_by_tag_name('body')
+        body.send_keys(Keys.CONTROL + Keys.TAB)
+
         new_title = self.driver.title
         self.assertNotEqual(init_title, new_title)
-        self.assertEqual(new_title, "(3) New requests")
+        self.assertEqual(new_title, "(10) New requests")

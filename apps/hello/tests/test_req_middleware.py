@@ -32,10 +32,9 @@ class LogWebRequestMiddlewareTest(TestCase):
         """Test middleware on response answering.
         """
         fake_actions = self.get_req_and_res()
-        map(
-            lambda income: self.assertEqual(
+        for income in fake_actions:
+            self.assertEqual(
                 self.lwrm.process_response(
                     income['request'], income['response']
                 ), income['response']
-            ), fake_actions
-        )
+            )

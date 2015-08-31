@@ -25,7 +25,7 @@ class ContactIntegrationTest(BaseConfigTestCase):
         self.assertEqual(
             self.driver.title,
             unicode(
-                ' '.join(contact.first_name, contact.last_name)
+                ' '.join([contact.first_name, contact.last_name])
             )
         )
         xpaths = dict(
@@ -47,7 +47,7 @@ class ContactIntegrationTest(BaseConfigTestCase):
 
         birth_date = self.driver \
             .find_element_by_xpath(xpaths['birth_date']).text
-        self.assertEqual(birth_date, contact.birth_date)
+        self.assertEqual(birth_date, contact.birth_date.strftime("%Y-%m-%d"))
 
         bio = self.driver.find_element_by_xpath(xpaths['bio']).text
         self.assertEqual(bio, contact.bio)
@@ -56,7 +56,7 @@ class ContactIntegrationTest(BaseConfigTestCase):
         self.assertEqual(email, contact.email)
 
         jabber = self.driver.find_element_by_xpath(xpaths['jabber']).text
-        self.assertEqual(jabber, contact.contact.jabber)
+        self.assertEqual(jabber, contact.jabber)
 
         skype = self.driver.find_element_by_xpath(xpaths['skype']).text
         self.assertEqual(skype, contact.skype)

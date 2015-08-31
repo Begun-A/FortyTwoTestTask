@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 
 from hello.models import LogWebRequest
 from hello.views import LogRequestView
-from hello.factories import FAKE_PATH_LIST, LogWebRequestFactory
+from hello.factories import FAKE_PATH_LIST
 
 
 class LogRequestTest(TestCase):
@@ -71,7 +71,11 @@ class LogRequestTest(TestCase):
         """Check if json is ansvered.
         """
         for x in xrange(10):
-            LogWebRequestFactory()
+            LogWebRequest(
+                method='GET',
+                status_code=200,
+                remote_addr='127.0.0.1'
+            ).save()
 
         self.assertEqual(self.model.objects.count(), 10)
         # get json info about it
@@ -94,7 +98,12 @@ class LogRequestTest(TestCase):
         """Send fake filter key and get it content on the page.
         """
         for x in xrange(10):
-            LogWebRequestFactory(priority=1)
+            LogWebRequest(
+                method='GET',
+                status_code=200,
+                remote_addr='127.0.0.1',
+                priority=1
+            ).save()
 
         self.assertEqual(self.model.objects.count(), 10)
         response = self.client.get(

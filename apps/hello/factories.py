@@ -1,13 +1,13 @@
 import datetime
+"""
 import factory
 import factory.fuzzy
-
 from models import (
     Contact,
     LogWebRequest,
     SignalLog
 )
-
+"""
 
 FAKE_PATH_LIST = (
     '/fefw',
@@ -40,6 +40,7 @@ FAKE_STATUSES = (200, 302, 404, 500)
 FAKE_ADDRS = ('127.0.0.1', '942.4.3.1', '234.5.1.6')
 
 
+"""
 class ContactFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Contact
@@ -84,3 +85,4 @@ class SignalLogFactory(factory.django.DjangoModelFactory):
     time = factory.Sequence(
         lambda n: datetime.date(2000, 1, 1) + datetime.timedelta(days=n)
     )
+"""

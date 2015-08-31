@@ -31,8 +31,8 @@ $(document).ready(function() {
         }
     });
     var update_requests = function() {
-        var filter_val = parseInt($("#pr_filter").val());
-        if (filter_val == 1) {
+        var filter_val = $("#pr_filter").prop("checked");
+        if (filter_val == true) {
             filter_data = {
                 priority: filter_val
             }
@@ -45,7 +45,7 @@ $(document).ready(function() {
             cache: false,
             data: filter_data,
             success: function(response) {
-                if (income_count != response[0].pk) {
+                if (income_count != response[0].pk && response[0] != '') {
                     $('tbody').empty();
                     $.each(response, function(i, item) {
                         var tr = "<tr>";

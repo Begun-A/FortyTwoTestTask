@@ -15,18 +15,16 @@
         <table id="#requests" class="table table-hover">
             <thead>
                 <tr>
-                    <td>
-                        <input id="pr_filter" class="form-control" type="text" placeholder="Priority(dafault=0)" size="5px" />
-                    </td>
-                </tr>
-                <tr>
                     <th>Id</th>
                     <th>Method</th>
                     <th>Path</th>
                     <th>Status</th>
                     <th>Remote addr</th>
                     <th>Time</th>
-                    <th>Priority</th>
+                    <th>
+                        <input id="pr_filter" type="checkbox"/>
+                        <span>Priority</span>
+                    </th>
                 </tr>
             </thead>
             {% autoescape off %}

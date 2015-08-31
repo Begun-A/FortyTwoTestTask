@@ -23,7 +23,7 @@ class LogRequestView(ListView):
 
         if 'priority' in request.GET:
             update_q = LogWebRequest.objects.filter(
-                priority=request.GET['priority']
+                priority=int(bool(request.GET['priority']))
             ).order_by('-id')[:10]
         else:
             update_q = LogWebRequest.objects.order_by('-id')[:10]
