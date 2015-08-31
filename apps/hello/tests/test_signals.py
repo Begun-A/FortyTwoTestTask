@@ -18,7 +18,7 @@ class SignalUnitTest(TestCase):
         """Create some information and check it in signal log.
         """
         sl_m = SignalLog.objects.last()
-        self.assertEqual(sl_m.action, "POST")
+        self.assertEqual(sl_m.action, "added")
         self.assertEqual(sl_m.model, self.model_name)
 
     def test_check_signal_after_put_complete(self):
@@ -29,7 +29,7 @@ class SignalUnitTest(TestCase):
         c_m.last_name = "World"
         c_m.save()
         sl_m = SignalLog.objects.last()
-        self.assertEqual(sl_m.action, "PUT")
+        self.assertEqual(sl_m.action, "updated")
         self.assertEqual(sl_m.model, self.model_name)
 
     def test_check_signal_after_delete_complete(self):
@@ -38,5 +38,5 @@ class SignalUnitTest(TestCase):
         c_m = self.model.objects.last()
         c_m.delete()
         sl_m = SignalLog.objects.last()
-        self.assertEqual(sl_m.action, "DELETE")
+        self.assertEqual(sl_m.action, "removed")
         self.assertEqual(sl_m.model, self.model_name)

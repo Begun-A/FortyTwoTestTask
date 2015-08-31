@@ -1,13 +1,6 @@
-"""
-This test do not wok on getBarista. Need to run it manually.
-
-
-import datetime
-import subprocess
-import os
+from StringIO import StringIO
 from django.test import TestCase
-from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
+from django.core import management
 
 
 class CommandsTestCase(TestCase):
@@ -15,26 +8,17 @@ class CommandsTestCase(TestCase):
     @classmethod
     def setUp(cls):
         cls.custom_cmd = 'modelscount'
-        cls.bash_file = os.path.join(settings.BASE_DIR, 'count_models.sh')
-        cls.file_name = datetime.datetime.now().strftime("%Y-%m-%d") + ".dat"
-        cls.file_path = os.path.join(settings.BASE_DIR, cls.file_name)
 
     def test_modelscount_command(self):
-        """"""Test ./manage.py modelscount command
+        """Test ./manage.py modelscount command
         and check if it written in dat file.
-        """"""
-
-        subprocess.call(["sh", self.bash_file])
-        self.assertTrue(self.file_path)
-        with open(self.file_path) as f:
-            readed = f.read()
-
-        for ct in ContentType.objects.all():
-            m = ct.model_class()
-            self.assertIn('error', readed)
-            self.assertIn(
-                "%s.%s" % (m.__module__, m.__name__),
-                readed
-            )
-
-"""
+        """
+        out = StringIO()
+        management.call_command(self.custom_cmd, stdout=out)
+        outputs = [
+            'Model: hello.models.Contact, count: 1',
+            'Model: django.contrib.auth.models.User, count: 1'
+        ]
+        self.assertIsNotNone(out.getvalue())
+        for output in outputs:
+            self.assertIn(output, out.getvalue())
