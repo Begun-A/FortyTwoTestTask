@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
 
-from apps import TEST_DATA
 from hello.views import LoginView
 
 
@@ -16,15 +15,13 @@ class LoginUnitTest(TestCase):
     """
 
     fixtures = ['initial_data.json']
+    ADMIN_USERNAME = "admin@admin.com"
+    ADMIN_PASSWORD = "admin"
 
     def setUp(self):
         self.factory = RequestFactory()
         self.fake_path = reverse('login')
-        self.user = User.objects.create_user(
-            username=TEST_DATA['first_name'],
-            email=TEST_DATA['email'],
-            password=TEST_DATA['password']
-        )
+        self.user = User.objects.last()
 
     def tearDown(self):
         self.user.delete()
@@ -40,7 +37,7 @@ class LoginUnitTest(TestCase):
     def test_created_user(self):
         """Check if user in database.
         """
-        check_user = User.objects.get(email=TEST_DATA['email'])
+        check_user = User.objects.last()
         self.assertEqual(self.user, check_user)
 
     def test_login_get_OK_and_recieve_form(self):
@@ -61,8 +58,8 @@ class LoginUnitTest(TestCase):
         request = self.factory.post(
             path=self.fake_path,
             data=dict(
-                username=TEST_DATA['first_name'],
-                password=TEST_DATA['password']
+                username=self.ADMIN_USERNAME,
+                password=self.ADMIN_PASSWORD
             ),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
@@ -94,7 +91,8 @@ class LoginUnitTest(TestCase):
         self.assertIsNotNone(response.content)
         res_cont = json.loads(response.content)
         try:
-            map(lambda error: self.assertIsNotNone(res_cont[error]), errors)
+            for error in errors:
+                self.assertIsNotNone(res_cont[error])
         except KeyError:
             pass
 

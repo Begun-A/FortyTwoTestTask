@@ -18,7 +18,6 @@ $(document).ready(function() {
     });
     var form = $("form#update_contact");
     var form_img = $("#update_img_link").attr("href");
-    var MEDIA_URL = '/uploads/';
     var options = {
         dataType: 'json',
         url: form.attr('action'),

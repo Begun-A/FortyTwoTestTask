@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.conf import settings
-
 from hello.models import SignalLog
+
 
 MODELS_IGNORE = (
     'LogEntry',
@@ -15,13 +15,13 @@ def post_and_put_signal_log(sender, created, **kwargs):
     if created and sender.__name__ not in MODELS_IGNORE:
         SignalLog.objects.create(
             model=sender.__name__,
-            action='POST'
+            action='added'
         )
 
-    if created is False and sender.__name__ not in MODELS_IGNORE:
+    if not created and sender.__name__ not in MODELS_IGNORE:
         SignalLog.objects.create(
             model=sender.__name__,
-            action='PUT'
+            action='updated'
         )
 
     return
@@ -32,7 +32,7 @@ def delete_signal_log(sender, **kwargs):
     if sender.__name__ not in MODELS_IGNORE:
         SignalLog.objects.create(
             model=sender.__name__,
-            action='DELETE'
+            action='removed'
         )
 
     return

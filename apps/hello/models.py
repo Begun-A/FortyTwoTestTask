@@ -17,17 +17,43 @@ class Contact(models.Model):
     photo = models.ImageField(upload_to='images', blank=True, null=True)
 
     def save(self, size=(200, 200)):
+
         super(Contact, self).save()
 
         try:
-            filename = str(self.photo.path)
-            image = Image.open(filename)
+            pw = self.photo.width
+            ph = self.photo.height
+            nw = size[0]
+            nh = size[1]
 
-            image.resize(size, Image.ANTIALIAS)
-            image.save(filename)
-        except (IOError, ValueError, AttributeError):
+            # only do this if the image needs resizing
+            if (pw, ph) != (nw, nh):
+                filename = str(self.photo.path)
+                image = Image.open(filename)
+                pr = float(pw) / float(ph)
+                nr = float(nw) / float(nh)
+
+                if pr > nr:
+                    # photo aspect is wider than destination ratio
+                    tw = int(round(nh * pr))
+                    image = image.resize((tw, nh), Image.ANTIALIAS)
+                    l = int(round((tw - nw) / 2.0))
+                    image = image.crop((l, 0, l + nw, nh))
+                elif pr < nr:
+                    # photo aspect is taller than destination ratio
+                    th = int(round(nw / pr))
+                    image = image.resize((nw, th), Image.ANTIALIAS)
+                    t = int(round((th - nh) / 2.0))
+                    print((0, t, nw, t + nh))
+                    image = image.crop((0, t, nw, t + nh))
+                else:
+                    # photo aspect matches the destination ratio
+                    image = image.resize(size, Image.ANTIALIAS)
+
+                image.save(filename)
+
+        except ValueError:
             pass
-        return None
 
 
 class LogWebRequest(models.Model):

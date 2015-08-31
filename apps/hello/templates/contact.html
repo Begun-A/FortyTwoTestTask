@@ -25,7 +25,7 @@
                 </form>
             </div>
             <div class="col-md-2">
-                <a href="{% url 'edit' %}">Edit </a><a href="{% edit_link contact %}">(admin)</a>
+                <a href="{% url 'edit' contact.id %}">Edit </a><a href="{% edit_link contact %}">(admin)</a>
             </div>
             {% else %}
             <div class="col-md-4">
@@ -50,7 +50,7 @@
         <div class="row">
             <div class="col-md-4">
             {% if contact.photo %}
-                <img id="update_img" src="{{ MEDIA_URL }}{{ contact.photo }}" />
+                <img clas="img-responsive" src="{{ MEDIA_URL }}{{ contact.photo }}" />
             {% endif %}
             </div>
             <div class="col-md-4">
