@@ -15,7 +15,12 @@
         <table id="#requests" class="table table-hover">
             <thead>
                 <tr>
-                    <th data-sort="int">Id</th>
+                    <td>
+                        <input id="pr_filter" class="form-control" type="text" placeholder="Priority(dafault=0)" size="5px" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>Id</th>
                     <th>Method</th>
                     <th>Path</th>
                     <th>Status</th>
@@ -42,7 +47,7 @@
         </table>
         <hr>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-1">
                 <a href="{% url 'contact' %}">contact</a>
             </div>
         </div>

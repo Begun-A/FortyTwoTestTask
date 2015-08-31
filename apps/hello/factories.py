@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import factory
 import factory.fuzzy
 
@@ -26,7 +26,7 @@ FAKE_DATA = {
     u"last_name": u"world",
     u"skype": u"gogogo",
     u"birth_date": unicode(
-        datetime.utcnow().strftime("%Y-%m-%d")
+        datetime.datetime.utcnow().strftime("%Y-%m-%d")
     ),
     u"jabber": u"jaber@jaber.com",
     u"email": u"email@email.com",

@@ -3,14 +3,7 @@ from hello.models import Contact, LogWebRequest, SignalLog
 
 
 class LogWebRequestAdmin(admin.ModelAdmin):
-    list_display = (
-        'priority',
-        'method',
-        'path',
-        'status_code',
-        'remote_addr',
-        'time'
-    )
+    list_filter = ('priority',)
 
 
 admin.site.register(Contact)

@@ -3,7 +3,8 @@ $(document).ready(function() {
         staged_count = 0,
         hidden, 
         visibilityChange,
-        income_count; 
+        income_count,
+        filter_data; 
         
     if (typeof document.hidden !== "undefined") { 
         hidden = "hidden";
@@ -30,10 +31,19 @@ $(document).ready(function() {
         }
     });
     var update_requests = function() {
+        var filter_val = parseInt($("#pr_filter").val());
+        if (filter_val == 1) {
+            filter_data = {
+                priority: filter_val
+            }
+        } else {
+            filter_data = {}
+        }
         $.ajax({
             method: "GET",
             url: "/requests/",
             cache: false,
+            data: filter_data,
             success: function(response) {
                 if (income_count != response[0].pk) {
                     $('tbody').empty();

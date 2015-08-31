@@ -16,6 +16,9 @@ class Contact(models.Model):
     other = models.TextField(blank=True, null=True)
     photo = models.ImageField(upload_to='images', blank=True, null=True)
 
+    def __unicode__(self):
+        return u'%s %s' % (self.first_name, self.last_name)
+
     def save(self, size=(200, 200)):
 
         super(Contact, self).save()
@@ -67,6 +70,12 @@ class LogWebRequest(models.Model):
     time = models.DateTimeField(auto_now=True)
     priority = models.IntegerField(default=0)
 
+    def __unicode__(self):
+        return u'Request: %s, priority: %s' % (
+            self.pk,
+            self.priority
+        )
+
 
 class SignalLog(models.Model):
     class Meta:
@@ -75,3 +84,6 @@ class SignalLog(models.Model):
     action = models.CharField(max_length=16)
     model = models.CharField(max_length=25)
     time = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return u'%s %s' % (self.model, self.action)

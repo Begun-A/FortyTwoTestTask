@@ -18,11 +18,14 @@ class LogRequestView(ListView):
         return super(LogRequestView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        if request.is_ajax():
+        if not request.is_ajax():
+            return super(LogRequestView, self).get(request, *args, **kwargs)
+
+        if 'priority' in request.GET:
+            update_q = LogWebRequest.objects.filter(
+                priority=request.GET['priority']
+            ).order_by('-id')[:10]
+        else:
             update_q = LogWebRequest.objects.order_by('-id')[:10]
-            data = json.loads(serializers.serialize('json', update_q))
-            return JsonResponse(
-                content=data,
-                status=200
-            )
-        return super(LogRequestView, self).get(request, *args, **kwargs)
+        data = json.loads(serializers.serialize('json', update_q))
+        return JsonResponse(content=data, status=200)
