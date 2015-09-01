@@ -32,7 +32,7 @@ class LogRequestView(ListView):
             update_q = self.model.objects.filter(
                 priority=pr
             ).order_by('-id')
-        if '__10__' in request.GET:
+        else:
             update_q = self.model.objects.filter(
                 priority=pr
             ).order_by('-id')[:10]

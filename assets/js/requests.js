@@ -40,7 +40,6 @@ $(document).ready(function() {
 
         if (selected_val == "10 requests") {
             filter_data = {
-                __10__: true,
                 priority: prio_count
             }
         } else if (selected_val == "all requests") {
