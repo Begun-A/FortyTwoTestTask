@@ -38,18 +38,6 @@ class ContactUnitTest(TestCase):
         contact = self.model.objects.last()
         self.assertEqual(contact.email, email)
 
-    def test_if_we_can_add_data_to_db(self):
-        """Test if we can add data and check in db.
-        """
-        model = self.model(**FAKE_DATA)
-        model.save()
-        self.assertEqual(self.model.objects.count(), 2)
-        db_data = json.loads(
-            serializers.serialize('json', [self.model.objects.last(), ])
-        )[0]['fields']
-        self.assertDictEqual(db_data, FAKE_DATA)
-        model.delete()
-
     def test_data_deletion_in_db(self):
         """Test if data deleted in db.
         """
@@ -74,20 +62,26 @@ class ContactUnitTest(TestCase):
         for value in [el for el in db_data.values()]:
             self.assertIn(value, response_content)
 
-    def test_contact_get_ok_request(self):
-        """Check if page get status OK and response template.
+    def test_contact_page_when_2_records_in_db(self):
+        """Check if page don't render second record on page.
         """
+        model = self.model(**FAKE_DATA)
+        model.save()
+        self.assertEqual(self.model.objects.count(), 2)
         request = self.factory.get(path=self.fake_path)
         response = ContactView.as_view()(request)
+        response_content = response.render().content
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.template_name[0],
             self.template
         )
+        db_data = Contact.objects.all().values()[1]
+        for el in db_data.values()[:-1]:
+            if el:
+                self.assertNotIn(str(el), response_content)
 
-    def test_admin_delete_of_model(self):
-        """Delete data from admin.
-        """
+    def admin_response_delete(self):
         delete_path = reverse('admin:%s_%s_delete' % self.pattern, args=(1,))
         response = self.client.post(
             path=delete_path,
@@ -98,32 +92,53 @@ class ContactUnitTest(TestCase):
             }
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(self.model.objects.count(), 0)
 
-    def test_admin_add_to_model(self):
-        """Add data from admin.
-        """
+    def admin_response_add(self):
         add_path = reverse('admin:%s_%s_add' % self.pattern)
         response = self.client.post(path=add_path, data=FAKE_DATA)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(self.model.objects.count(), 2)
-        db_data = json.loads(
-            serializers.serialize('json', [self.model.objects.last(), ])
-        )[0]['fields']
-        self.assertDictEqual(db_data, FAKE_DATA)
 
-    def test_admin_update_of_model(self):
-        """Update data from admin.
-        """
+    def admin_response_update(self):
         update_path = reverse('admin:%s_%s_change' % self.pattern, args=(1,))
-        FAKE_DATA["first_name"] = "Human"
+        data = FAKE_DATA.copy()
+        data["first_name"] = "Human"
         response = self.client.post(
             path=update_path,
-            data=FAKE_DATA
+            data=data
         )
         self.assertEqual(response.status_code, 302)
+
+    def test_admin_delete_of_model_create_new_and_ckeck_it(self):
+        """Delete, add and update data from admin,
+        add new and check it on the page.
+        """
+        # delete and check page not found
+        self.admin_response_delete()
+        self.assertEqual(self.model.objects.count(), 0)
+        contact_res = self.client.get(path=self.fake_path)
+        self.assertEqual(contact_res.status_code, 404)
+        self.assertIn('<h1>Page Not Found</h1>', contact_res.content)
+
+        # add and check it on main page
+        self.admin_response_add()
         self.assertEqual(self.model.objects.count(), 1)
-        db_data = json.loads(
-            serializers.serialize('json', [self.model.objects.last(), ])
-        )[0]['fields']
-        self.assertDictEqual(db_data, FAKE_DATA)
+        contact_res = self.client.get(path=self.fake_path)
+        response_content = contact_res.render().content
+        self.assertEqual(contact_res.status_code, 200)
+        db_data = Contact.objects.all().values()[0]
+        # need to skip id from query so take list to the last element
+        for el in db_data.values()[:-1]:
+            if el:
+                self.assertIn(str(el), response_content)
+
+        # update it and check it on main page
+        self.admin_response_update()
+        self.assertEqual(self.model.objects.count(), 1)
+        contact_res = self.client.get(path=self.fake_path)
+        response_content = contact_res.render().content
+        self.assertEqual(contact_res.status_code, 200)
+        db_updated = Contact.objects.all().values()[0]
+        self.assertNotEqual(db_updated, db_data)
+        for el in db_data.values()[:-1]:
+            if el:
+                self.assertIn(str(el), response_content)
