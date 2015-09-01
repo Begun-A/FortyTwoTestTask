@@ -14,10 +14,12 @@ class CommandsTestCase(TestCase):
         and check if it written in dat file.
         """
         out = StringIO()
-        management.call_command(self.custom_cmd, stdout=out)
+        management.call_command(self.custom_cmd, stdout=out, stderr=out)
         outputs = [
             'Model: hello.models.Contact, count: 1',
-            'Model: django.contrib.auth.models.User, count: 1'
+            'error: Model: hello.models.Contact, count: 1',
+            'Model: django.contrib.auth.models.User, count: 1',
+            'error: Model: django.contrib.auth.models.User, count: 1'
         ]
         self.assertIsNotNone(out.getvalue())
         for output in outputs:

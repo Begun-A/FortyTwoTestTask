@@ -1,8 +1,8 @@
-import json
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse_lazy
+from django.core.serializers.json import json, DjangoJSONEncoder
 
 
 class JsonResponse(HttpResponse):
@@ -14,7 +14,7 @@ class JsonResponse(HttpResponse):
         status=None, content_type='application/json'
     ):
         super(JsonResponse, self).__init__(
-            content=json.dumps(content),
+            content=json.dumps(content, cls=DjangoJSONEncoder),
             status=status,
             content_type=content_type,
         )

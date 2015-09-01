@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 
 from hello.models import LogWebRequest
 from hello.views import LogRequestView
-from hello.factories import FAKE_PATH_LIST
 
 
 class LogRequestTest(TestCase):
@@ -42,30 +41,6 @@ class LogRequestTest(TestCase):
             fields['time'] = formatted_date.strftime('%Y-%m-%dT%H:%M:%S')
             fields_json.append(fields)
         return fields_json
-
-    def test_by_client_get_10_records_from_db(self):
-        """See results of 10 requests in the page.
-        """
-        for path in FAKE_PATH_LIST:
-            self.client.get(path=path)
-
-        # check if it 10 in db
-        self.assertEqual(self.model.objects.count(), 10)
-        queryset = self.model.objects.order_by('-id')[:10]
-
-        # serializedata from db
-        query_json = serializers.serialize('json', queryset)
-        db_fields = LogRequestTest._serialize_queryset(query_json)
-
-        # we make request on /requests/ page so one request added
-        response = self.client.get(path=self.fake_path)
-        # 11 dont be rendered because the page will be refreshed only when ajax
-        self.assertEqual(self.model.objects.count(), 11)
-
-        self.assertNotIn(str(11), response.content)
-        for db_field in db_fields:
-            for val in db_field.values():
-                self.assertIn(str(val), response.content)
 
     def test_ajax_10_response_on_request_page(self):
         """Check if json is ansvered.

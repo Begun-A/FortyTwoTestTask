@@ -1,5 +1,3 @@
-import json
-from django.core import serializers
 from django.views.generic import UpdateView
 from django.core.urlresolvers import reverse_lazy
 
@@ -22,11 +20,7 @@ class EditView(LoginRequiredMixin, AjaxableResponseMixin, UpdateView):
         super(EditView, self).get_success_url()
 
     def get_initial(self):
-        return json.loads(
-            serializers.serialize(
-                'json',
-                [self.model.objects.get(pk=self.kwargs['pk']), ])
-        )[0]['fields']
+        return self.model.objects.filter(pk=self.kwargs['pk']).values()[0]
 
     def form_valid(self, form):
         self.object = form.save()

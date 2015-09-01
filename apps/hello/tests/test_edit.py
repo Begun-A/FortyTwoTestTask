@@ -1,3 +1,4 @@
+import os
 import json
 
 from django.test import TestCase
@@ -6,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, AnonymousUser
 
 from hello.views import EditView
+from hello.models import Contact
 
 
 class EditFormTest(TestCase):
@@ -58,12 +60,12 @@ class EditFormTest(TestCase):
             data=data,
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
-        content = [el for el in json.loads(response.content).values()]
+        content = json.loads(response.content).values()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('content-type'), 'application/json')
         new_res = self.test_if_form_is_present_on_page()
         for el in content:
-            self.assertIn(el, new_res.content)
+            self.assertIn(str(el), new_res.content)
 
     def test_check_invalid_post_request_and_get_form_errors(self):
         """Check post request with invalid data and get errors from form.
@@ -89,7 +91,7 @@ class EditFormTest(TestCase):
             'Jabber is required.',
             'Email is required.'
         ]
-        content = [el for el in json.loads(response.content).values()]
+        content = json.loads(response.content).values()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.get('content-type'), 'application/json')
         for el in content:
@@ -109,3 +111,64 @@ class EditFormTest(TestCase):
         self.assertEqual(response.status_code, 302)
         redirect_url = "%s?next=%s" % (reverse('login'), self.fake_path)
         self.assertEqual(redirect_url, response.url)
+
+    @staticmethod
+    def generate_new_filename(ext):
+        """Generate new file name with ascii + digits and
+        add it to the file extension.
+        """
+        import random
+        import string
+        name = ''.join(
+            random.choice(string.ascii_lowercase + string.digits)
+            for x in xrange(16)
+        )
+        return '.'.join([name, ext])
+
+    @staticmethod
+    def create_test_image(name, color, size, ext):
+        from StringIO import StringIO
+        from PIL import Image
+        # solid red
+        file = StringIO()
+        image = Image.new("RGBA", size=size, color=color)
+        image.save(file, ext)
+        file.name = name
+        file.seek(0)
+        return file
+
+    def test_of_resize_photo(self):
+        """Check if th given photo will be resized to 200x200.
+        """
+        ext = 'png'
+        photo_color = (255, 0, 0)
+        photo_size = (350, 250)
+
+        photo_name = EditFormTest.generate_new_filename(ext)
+        photo = EditFormTest.create_test_image(
+            name=photo_name,
+            color=photo_color,
+            size=photo_size,
+            ext='png'
+        )
+        response = self.client.get(path=self.fake_path)
+        data = response.context_data['form'].initial
+        data['photo'] = photo
+        photo_upload = self.client.post(
+            path=self.fake_path,
+            data=data,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+        self.assertEqual(photo_upload.status_code, 200)
+
+        # now check photo in db
+        contact = Contact.objects.last()
+        self.assertIsNotNone(contact.photo)
+        self.assertEqual(
+            (contact.photo.width, contact.photo.height),
+            (200, 200)
+        )
+        self.assertEqual(
+            os.path.basename(contact.photo.name),
+            photo_name
+        )
