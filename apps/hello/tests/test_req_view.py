@@ -11,6 +11,7 @@ from hello.factories import (
     FAKE_ADDRS,
     FAKE_METHODS,
     FAKE_STATUSES,
+    FAKE_PATH_LIST
 )
 
 
@@ -52,11 +53,13 @@ class LogRequestTest(TestCase):
         """Check if json of 10 records is ansvered.
         """
         # take 30 for example
-        for x in xrange(30):
+        count = 30
+        for x in xrange(count):
             LogWebRequest(
                 method=random.choice(FAKE_METHODS),
                 status_code=random.choice(FAKE_STATUSES),
                 remote_addr=random.choice(FAKE_ADDRS),
+                path=random.choice(FAKE_PATH_LIST),
             ).save()
 
         # get json info about it
@@ -66,40 +69,14 @@ class LogRequestTest(TestCase):
         )
         self.assertEqual(response.get('content-type'), 'application/json')
         response_f_cont = LogRequestTest._serialize_queryset(response.content)
-        self.assertEqual(len(response_f_cont), 10)
         self.assertLessEqual(len(response_f_cont), 10)
 
         # check it with db
         queryset = self.model.objects.order_by('-id')
         query_json = serializers.serialize('json', queryset)
         db_content = LogRequestTest._serialize_queryset(query_json)
-        for x in xrange(10):
-            self.assertDictEqual(db_content[x], response_f_cont[x])
-
-    def test_10_queries_with_filter(self):
-        """Send fake filter key and get it content on the page.
-        """
-        for x in xrange(23):
-            LogWebRequest(
-                method=random.choice(FAKE_METHODS),
-                status_code=random.choice(FAKE_STATUSES),
-                remote_addr=random.choice(FAKE_ADDRS),
-                priority=1
-            ).save()
-
-        response = self.client.get(
-            path=self.fake_path,
-            data=dict(priority=1),
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-        self.assertEqual(response.get('content-type'), 'application/json')
-        response_f_cont = LogRequestTest._serialize_queryset(response.content)
-        self.assertEqual(len(response_f_cont), 10)
-        self.assertLessEqual(len(response_f_cont), 10)
-
-        # check it with db
-        queryset = self.model.objects.order_by('-id')[:10]
-        query_json = serializers.serialize('json', queryset)
-        db_content = LogRequestTest._serialize_queryset(query_json)
-        for x in xrange(10):
-            self.assertDictEqual(db_content[x], response_f_cont[x])
+        for x in xrange(count):
+            if x >= 10:
+                self.assertNotIn(db_content[x], response_f_cont)
+                continue
+            self.assertIn(db_content[x], response_f_cont)

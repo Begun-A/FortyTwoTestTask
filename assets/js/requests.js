@@ -30,22 +30,34 @@ $(document).ready(function() {
             staged_count = 0;
         }
     });
-    var update_requests = function() {
-        var filter_val = $("#pr_filter").prop("checked");
-        if (filter_val == true) {
-            filter_data = {
-                priority: filter_val
-            }
-        } else {
-            filter_data = {}
+
+    setInterval(function() {
+        var prio_count = Number($("#prio_count").val()); 
+        var selected_val = $("#update_table").val(); 
+        if (isNaN(prio_count)) {
+            prio_count = 0;
         }
+
+        if (selected_val == "10 requests") {
+            filter_data = {
+                __10__: true,
+                priority: prio_count
+            }
+        } else if (selected_val == "all requests") {
+            filter_data = {
+                __all__: true,
+                priority: prio_count
+            }
+        }
+    }, 0);
+    var update_requests = function() {
         $.ajax({
             method: "GET",
             url: "/requests/",
             cache: false,
             data: filter_data,
             success: function(response) {
-                if (income_count != response[0].pk && response[0] != '') {
+                if (response[0] != '') {
                     $('tbody').empty();
                     $.each(response, function(i, item) {
                         var tr = "<tr>";

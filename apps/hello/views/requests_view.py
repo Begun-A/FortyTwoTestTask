@@ -12,6 +12,7 @@ class LogRequestView(ListView):
     template_name = 'requests.html'
     queryset = LogWebRequest.objects.order_by('-id')[:10]
     context_object_name = 'log_requests'
+    model = LogWebRequest
 
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -21,11 +22,20 @@ class LogRequestView(ListView):
         if not request.is_ajax():
             return super(LogRequestView, self).get(request, *args, **kwargs)
 
-        if 'priority' in request.GET:
-            update_q = LogWebRequest.objects.filter(
-                priority=int(bool(request.GET['priority']))
+        try:
+            pr = int(request.GET['priority'])
+            pr = pr if isinstance(pr, int) and not 0 else 0
+        except ValueError:
+            pr = 0
+
+        if '__all__' in request.GET:
+            update_q = self.model.objects.filter(
+                priority=pr
+            ).order_by('-id')
+        if '__10__' in request.GET:
+            update_q = self.model.objects.filter(
+                priority=pr
             ).order_by('-id')[:10]
-        else:
-            update_q = LogWebRequest.objects.order_by('-id')[:10]
+
         data = json.loads(serializers.serialize('json', update_q))
         return JsonResponse(content=data, status=200)

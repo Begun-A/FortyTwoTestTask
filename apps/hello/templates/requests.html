@@ -15,16 +15,22 @@
         <table id="#requests" class="table table-hover">
             <thead>
                 <tr>
+                    <td colspan="7">
+                        <select id="update_table">
+                            <option selected>10 requests</option>
+                            <option>all requests</option>
+                        </select>
+                        <input type="text" id="prio_count" placeholder="count" size="20px" />
+                    </td>
+                </tr>
+                <tr>
                     <th>Id</th>
                     <th>Method</th>
                     <th>Path</th>
                     <th>Status</th>
                     <th>Remote addr</th>
                     <th>Time</th>
-                    <th>
-                        <input id="pr_filter" type="checkbox"/>
-                        <span>Priority</span>
-                    </th>
+                    <th>Priority</th>
                 </tr>
             </thead>
             {% autoescape off %}
@@ -37,11 +43,11 @@
                     <td>{{ log_request.status_code }}</td>
                     <td>{{ log_request.remote_addr }}</td>
                     <td>{{ log_request.time|date:"Y-m-d\TH:i:s" }}</td>
-                    <td id="sort_prio">{{ log_request.priority }}</td>
+                    <td>{{ log_request.priority }}</td>
                 </tr>
             {% endfor %}
             </tbody>  
-            {% endautoescape %}   
+            {% endautoescape %}  
         </table>
         <hr>
         <div class="row">
