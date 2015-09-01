@@ -1,7 +1,7 @@
 import time
 from django.core.urlresolvers import reverse
 
-from hello.ft import BaseConfigTestCase
+from hello.tests import BaseConfigTestCase
 
 
 class LoginFormIntegrationTest(BaseConfigTestCase):

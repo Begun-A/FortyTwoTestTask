@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 
 from hello.factories import FAKE_PATH_LIST
 from hello.models import LogWebRequest
-from hello.ft import BaseConfigTestCase
+from hello.tests import BaseConfigTestCase
 
 
 class LogWebRequestIntegrationTest(BaseConfigTestCase):

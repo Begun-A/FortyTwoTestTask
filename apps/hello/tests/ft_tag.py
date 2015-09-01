@@ -1,7 +1,7 @@
 import time
 
 from django.core.urlresolvers import reverse_lazy
-from hello.ft import BaseConfigTestCase
+from hello.tests import BaseConfigTestCase
 
 
 class TagTest(BaseConfigTestCase):
