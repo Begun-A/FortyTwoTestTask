@@ -1,4 +1,5 @@
 import json
+import random
 from django.core import serializers
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -6,6 +7,11 @@ from django.core.urlresolvers import reverse
 
 from hello.models import LogWebRequest
 from hello.views import LogRequestView
+from hello.factories import (
+    FAKE_ADDRS,
+    FAKE_METHODS,
+    FAKE_STATUSES,
+)
 
 
 class LogRequestTest(TestCase):
@@ -43,16 +49,16 @@ class LogRequestTest(TestCase):
         return fields_json
 
     def test_ajax_10_response_on_request_page(self):
-        """Check if json is ansvered.
+        """Check if json of 10 records is ansvered.
         """
-        for x in xrange(10):
+        # take 30 for example
+        for x in xrange(30):
             LogWebRequest(
-                method='GET',
-                status_code=200,
-                remote_addr='127.0.0.1'
+                method=random.choice(FAKE_METHODS),
+                status_code=random.choice(FAKE_STATUSES),
+                remote_addr=random.choice(FAKE_ADDRS),
             ).save()
 
-        self.assertEqual(self.model.objects.count(), 10)
         # get json info about it
         response = self.client.get(
             path=self.fake_path,
@@ -60,10 +66,11 @@ class LogRequestTest(TestCase):
         )
         self.assertEqual(response.get('content-type'), 'application/json')
         response_f_cont = LogRequestTest._serialize_queryset(response.content)
+        self.assertEqual(len(response_f_cont), 10)
+        self.assertLessEqual(len(response_f_cont), 10)
 
         # check it with db
-        queryset = self.model.objects.order_by('-id')[:10]
-        self.assertEqual(self.model.objects.count(), 10)
+        queryset = self.model.objects.order_by('-id')
         query_json = serializers.serialize('json', queryset)
         db_content = LogRequestTest._serialize_queryset(query_json)
         for x in xrange(10):
@@ -72,15 +79,14 @@ class LogRequestTest(TestCase):
     def test_10_queries_with_filter(self):
         """Send fake filter key and get it content on the page.
         """
-        for x in xrange(10):
+        for x in xrange(23):
             LogWebRequest(
-                method='GET',
-                status_code=200,
-                remote_addr='127.0.0.1',
+                method=random.choice(FAKE_METHODS),
+                status_code=random.choice(FAKE_STATUSES),
+                remote_addr=random.choice(FAKE_ADDRS),
                 priority=1
             ).save()
 
-        self.assertEqual(self.model.objects.count(), 10)
         response = self.client.get(
             path=self.fake_path,
             data=dict(priority=1),
@@ -88,10 +94,11 @@ class LogRequestTest(TestCase):
         )
         self.assertEqual(response.get('content-type'), 'application/json')
         response_f_cont = LogRequestTest._serialize_queryset(response.content)
+        self.assertEqual(len(response_f_cont), 10)
+        self.assertLessEqual(len(response_f_cont), 10)
 
         # check it with db
         queryset = self.model.objects.order_by('-id')[:10]
-        self.assertEqual(self.model.objects.count(), 10)
         query_json = serializers.serialize('json', queryset)
         db_content = LogRequestTest._serialize_queryset(query_json)
         for x in xrange(10):
