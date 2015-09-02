@@ -24,18 +24,23 @@ class LogRequestView(ListView):
 
         try:
             pr = int(request.GET['priority'])
-            pr = pr if isinstance(pr, int) and not 0 else 0
-        except ValueError:
-            pr = 0
+        except (ValueError, KeyError):
+            pr = False
 
         if '__all__' in request.GET:
-            update_q = self.model.objects.filter(
-                priority=pr
-            ).order_by('-id')
-        else:
-            update_q = self.model.objects.filter(
-                priority=pr
-            ).order_by('-id')[:10]
+            if pr:
+                update_q = self.model.objects.filter(
+                    priority=pr
+                ).order_by('-id')
+            else:
+                update_q = self.model.objects.order_by('-id')
+        if '__10__' in request.GET:
+            if pr:
+                update_q = self.model.objects.filter(
+                    priority=pr
+                ).order_by('-id')[:10]
+            else:
+                update_q = self.model.objects.order_by('-id')[:10]
 
         data = json.loads(serializers.serialize('json', update_q))
         return JsonResponse(content=data, status=200)

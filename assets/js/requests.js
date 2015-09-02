@@ -5,7 +5,7 @@ $(document).ready(function() {
         visibilityChange,
         income_count,
         filter_data; 
-        
+    
     if (typeof document.hidden !== "undefined") { 
         hidden = "hidden";
         visibilityChange = "visibilitychange";
@@ -32,14 +32,15 @@ $(document).ready(function() {
     });
 
     setInterval(function() {
-        var prio_count = Number($("#prio_count").val()); 
+        var prio_count = parseInt($("#prio_count").val()); 
         var selected_val = $("#update_table").val(); 
         if (isNaN(prio_count)) {
-            prio_count = 0;
+            prio_count = false;
         }
 
         if (selected_val == "10 requests") {
             filter_data = {
+                __10__: true,
                 priority: prio_count
             }
         } else if (selected_val == "all requests") {
