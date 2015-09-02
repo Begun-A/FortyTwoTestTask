@@ -62,7 +62,7 @@ class LogRequestTest(TestCase):
         # get json info about it
         response = self.client.get(
             path=self.fake_path,
-            data=dict(priority=pr),
+            data=dict(priority=pr, __10__=True),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
         self.assertEqual(response.get('content-type'), 'application/json')
