@@ -1,6 +1,7 @@
-from StringIO import StringIO
 from django.test import TestCase
 from django.core import management
+from django.utils.six import StringIO
+from django.contrib.contenttypes.models import ContentType
 
 
 class CommandsTestCase(TestCase):
@@ -13,14 +14,20 @@ class CommandsTestCase(TestCase):
         """Test ./manage.py modelscount command
         and check if it written in dat file.
         """
-        out = StringIO()
-        management.call_command(self.custom_cmd, stdout=out, stderr=out)
-        outputs = [
-            'Model: hello.models.Contact, count: 1',
-            'error: Model: hello.models.Contact, count: 1',
-            'Model: django.contrib.auth.models.User, count: 1',
-            'error: Model: django.contrib.auth.models.User, count: 1'
-        ]
-        self.assertIsNotNone(out.getvalue())
-        for output in outputs:
-            self.assertIn(output, out.getvalue())
+        c_stdout = StringIO()
+        c_stderr = StringIO()
+        management.call_command(
+            self.custom_cmd,
+            stderr=c_stderr,
+            stdout=c_stdout
+        )
+        for ct in ContentType.objects.all():
+            m = ct.model_class()
+            msg = "Model: %(module)s.%(model)s, count: %(count)s" % dict(
+                module=m.__module__,
+                model=m.__name__,
+                count=m.objects.count()
+            )
+            err_msg = "error: " + msg
+            self.assertIn(msg, c_stdout.getvalue())
+            self.assertIn(err_msg, c_stderr.getvalue())

@@ -26,7 +26,7 @@ class TemplateTagUnitTest(TestCase):
             self.model_name
         )
         template = Template(load_tag + edit_tag)
-        queryset = self.model.objects.last()
+        queryset = self.model.objects.first()
         context = Context({"contact": queryset})
         needed_path = reverse_lazy(
             "admin:%s_%s_change" % (self.app_name, self.model_name),
