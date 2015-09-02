@@ -115,9 +115,12 @@ class ContactUnitTest(TestCase):
         # delete and check page not found
         self.admin_response_delete()
         self.assertEqual(self.model.objects.count(), 0)
-        contact_res = self.client.get(path=self.fake_path)
-        self.assertEqual(contact_res.status_code, 404)
-        self.assertIn('<h1>Page Not Found</h1>', contact_res.content)
+
+        from django.core.urlresolvers import NoReverseMatch
+        self.assertRaises(
+            NoReverseMatch,
+            lambda: self.client.get(path=self.fake_path)
+        )
 
         # add and check it on main page
         self.admin_response_add()
