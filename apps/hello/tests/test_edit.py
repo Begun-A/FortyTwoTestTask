@@ -1,5 +1,10 @@
 import os
 import json
+import random
+import string
+
+from PIL import Image
+from StringIO import StringIO
 
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -117,8 +122,6 @@ class EditFormTest(TestCase):
         """Generate new file name with ascii + digits and
         add it to the file extension.
         """
-        import random
-        import string
         name = ''.join(
             random.choice(string.ascii_lowercase + string.digits)
             for x in xrange(16)
@@ -127,8 +130,6 @@ class EditFormTest(TestCase):
 
     @staticmethod
     def create_test_image(name, color, size, ext):
-        from StringIO import StringIO
-        from PIL import Image
         # solid red
         file = StringIO()
         image = Image.new("RGBA", size=size, color=color)
@@ -142,7 +143,7 @@ class EditFormTest(TestCase):
         """
         ext = 'png'
         photo_color = (255, 0, 0)
-        photo_size = (350, 250)
+        photo_size = (114, 644)
 
         photo_name = EditFormTest.generate_new_filename(ext)
         photo = EditFormTest.create_test_image(
@@ -165,10 +166,39 @@ class EditFormTest(TestCase):
         contact = Contact.objects.last()
         self.assertIsNotNone(contact.photo)
         self.assertEqual(
-            (contact.photo.width, contact.photo.height),
-            (200, 200)
-        )
-        self.assertEqual(
             os.path.basename(contact.photo.name),
             photo_name
         )
+        croped_size = EditFormTest.check_correct_resize_image(
+            path=contact.photo.path,
+            size=photo_size
+        )
+        c_width = croped_size[2] - croped_size[0]
+        c_height = croped_size[3] - croped_size[1]
+        self.assertEqual((c_width, c_height), (200, 200))
+
+    @staticmethod
+    def check_correct_resize_image(path, size):
+        filename = str(path)
+        image = Image.open(filename)
+
+        current_w = size[0]
+        current_h = size[1]
+        needed_w = image.width
+        needed_h = image.height
+
+        current_r = float(current_w) / float(current_h)
+        needed_r = float(needed_w) / float(needed_h)
+        if current_r > needed_r:
+            # photo aspect is wider than destination ratio
+            tw = int(round(needed_h * current_r))
+            l = int(round((tw - needed_w) / 2.0))
+            size = (l, 0, l + needed_w, needed_h)
+
+        elif current_r < needed_r:
+            # photo aspect is taller than destination ratio
+            th = int(round(needed_w / current_r))
+            t = int(round((th - needed_h) / 2.0))
+            size = (0, t, needed_w, t + needed_h)
+
+        return size
