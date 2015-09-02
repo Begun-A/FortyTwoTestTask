@@ -144,7 +144,9 @@ class EditFormTest(TestCase):
         ext = 'png'
         photo_color = (255, 0, 0)
         init_ratio = photo_size[0] / float(photo_size[1])
-        given_ratio = 1
+
+        need_size = (200, 200)
+        need_ratio = need_size[0] / float(need_size[1])
 
         photo_name = EditFormTest.generate_new_filename(ext)
         photo = EditFormTest.create_test_image(
@@ -170,25 +172,20 @@ class EditFormTest(TestCase):
             os.path.basename(contact.photo.name),
             photo_name
         )
-        # have error deviation in save model method so cannot check
-        # their equality but we can check it resized side
+        # have error deviation in save model method (~0.01) so need to perform
+        # round of each.
         img_ratio = contact.photo.width / float(contact.photo.height)
+        img_size = (contact.photo.width, contact.photo.height)
+        self.assertEqual(round(img_ratio, 2), round(init_ratio, 2))
 
-        if given_ratio > img_ratio:
-            deviation = init_ratio / float(img_ratio)
-            init_width = photo_size[1] * img_ratio
-            self.assertEqual(int(round(init_width*deviation)), photo_size[0])
+        if need_ratio > img_ratio:
+            self.assertEqual(img_size[0], 200)
 
-        elif given_ratio < img_ratio:
-            deviation = img_ratio / float(init_ratio)
-            init_height = photo_size[0] / img_ratio
-            self.assertEqual(int(round(init_height*deviation)), photo_size[1])
+        elif need_ratio < img_ratio:
+            self.assertEqual(img_size[1], 200)
 
         else:
-            self.assertEqual(
-                (200, 200),
-                (contact.photo.width, contact.photo.height)
-            )
+            self.assertEqual(img_size, need_size)
 
     def test_resize_photo_with_different_sizes(self):
         """Check if th given photo will be resized to 200x200.
