@@ -132,7 +132,6 @@ class EditFormTest(TestCase):
     def create_test_image(name, color, size, ext):
         # solid red
         file = StringIO()
-        size = (int(round(size[0])), int(round(size[1])))
         image = Image.new("RGBA", size=size, color=color)
         image.save(file, ext)
         file.name = name
@@ -144,7 +143,7 @@ class EditFormTest(TestCase):
         """
         ext = 'png'
         photo_color = (255, 0, 0)
-        photo_size = (114.5, 644.3)
+        photo_size = (114, 644)
 
         photo_name = EditFormTest.generate_new_filename(ext)
         photo = EditFormTest.create_test_image(
@@ -170,30 +169,27 @@ class EditFormTest(TestCase):
             os.path.basename(contact.photo.name),
             photo_name
         )
-        self.assertEqual(
-            (contact.photo.width, contact.photo.height),
-            (200, 200)
-        )
         croped_size = EditFormTest.check_correct_resize_image(
             path=contact.photo.path,
             size=photo_size
         )
         c_width = croped_size[2] - croped_size[0]
         c_height = croped_size[3] - croped_size[1]
-        self.assertEqual((c_width, c_height), photo_size)
+        self.assertEqual((c_width, c_height), (200, 200))
 
     @staticmethod
     def check_correct_resize_image(path, size):
         filename = str(path)
         image = Image.open(filename)
 
-        current_w = image.width
-        current_h = image.height
-        needed_w = size[0]
-        needed_h = size[1]
+        current_w = size[0]
+        current_h = size[1]
+        needed_w = image.width
+        needed_h = image.height
 
         current_r = float(current_w) / float(current_h)
         needed_r = float(needed_w) / float(needed_h)
+
         if current_r > needed_r:
             # photo aspect is wider than destination ratio
             tw = int(round(needed_h * current_r))
