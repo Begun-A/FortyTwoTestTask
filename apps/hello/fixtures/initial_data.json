@@ -3,7 +3,7 @@
         "pk": 1, 
         "model": "hello.contact", 
         "fields": {
-            "bio": "self.educated man, try to find himself in web development.", 
+            "bio": "self.educated man, try to find myself in web development.", 
             "first_name": "Bogdan", 
             "last_name": "Kurinnyi", 
             "photo": null, 
