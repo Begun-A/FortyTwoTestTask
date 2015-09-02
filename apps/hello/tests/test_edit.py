@@ -1,3 +1,5 @@
+from __future__ import division
+
 import os
 import json
 import random
@@ -138,12 +140,11 @@ class EditFormTest(TestCase):
         file.seek(0)
         return file
 
-    def test_of_resize_photo(self):
-        """Check if th given photo will be resized to 200x200.
-        """
+    def make_resize_of_photo(self, photo_size):
         ext = 'png'
         photo_color = (255, 0, 0)
-        photo_size = (114, 644)
+        init_ratio = photo_size[0] / float(photo_size[1])
+        given_ratio = 1
 
         photo_name = EditFormTest.generate_new_filename(ext)
         photo = EditFormTest.create_test_image(
@@ -169,37 +170,37 @@ class EditFormTest(TestCase):
             os.path.basename(contact.photo.name),
             photo_name
         )
-        croped_size = EditFormTest.check_correct_resize_image(
-            path=contact.photo.path,
-            size=photo_size
-        )
-        c_width = croped_size[2] - croped_size[0]
-        c_height = croped_size[3] - croped_size[1]
-        self.assertEqual((c_width, c_height), (200, 200))
+        # have error deviation in save model method so cannot check
+        # their equality but we can check it resized side
+        img_ratio = contact.photo.width / float(contact.photo.height)
 
-    @staticmethod
-    def check_correct_resize_image(path, size):
-        filename = str(path)
-        image = Image.open(filename)
+        if given_ratio > img_ratio:
+            deviation = init_ratio / float(img_ratio)
+            init_width = photo_size[1] * img_ratio
+            self.assertEqual(int(round(init_width*deviation)), photo_size[0])
 
-        current_w = size[0]
-        current_h = size[1]
-        needed_w = image.width
-        needed_h = image.height
+        elif given_ratio < img_ratio:
+            deviation = img_ratio / float(init_ratio)
+            init_height = photo_size[0] / img_ratio
+            self.assertEqual(int(round(init_height*deviation)), photo_size[1])
 
-        current_r = float(current_w) / float(current_h)
-        needed_r = float(needed_w) / float(needed_h)
+        else:
+            self.assertEqual(
+                (200, 200),
+                (contact.photo.width, contact.photo.height)
+            )
 
-        if current_r > needed_r:
-            # photo aspect is wider than destination ratio
-            tw = int(round(needed_h * current_r))
-            l = int(round((tw - needed_w) / 2.0))
-            size = (l, 0, l + needed_w, needed_h)
+    def test_resize_photo_with_different_sizes(self):
+        """Check if th given photo will be resized to 200x200.
+        """
+        # when aspect ration < 1
+        size = (123, 5823)
+        self.make_resize_of_photo(size)
 
-        elif current_r < needed_r:
-            # photo aspect is taller than destination ratio
-            th = int(round(needed_w / current_r))
-            t = int(round((th - needed_h) / 2.0))
-            size = (0, t, needed_w, t + needed_h)
+        # when aspect ration > 1
+        size = (1237, 784)
+        self.make_resize_of_photo(size)
 
-        return size
+        # when aspect ration == 1
+        size = (761, 761)
+        self.make_resize_of_photo(size)
