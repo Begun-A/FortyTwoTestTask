@@ -24,17 +24,13 @@ class LogRequestView(ListView):
 
         queryset = self.model.objects.order_by('-id')
 
-        try:
-            priority = int(request.GET['priority'])
+        priority = request.GET.get('priority', None)
+        count = request.GET.get('count', "10")
+        if priority.isdigit():
             queryset = queryset.filter(priority=priority)
-        except (ValueError, KeyError):
-            pass
 
-        try:
-            count = int(request.GET['count'])
-        except (ValueError, KeyError):
-            count = 10
-        queryset = queryset[:count]
+        if count.isdigit():
+            queryset = queryset[:int(count)]
 
         data = json.loads(serializers.serialize('json', queryset))
         return JsonResponse(content=data, status=200)

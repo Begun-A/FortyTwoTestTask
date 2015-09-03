@@ -32,9 +32,14 @@ $(document).ready(function() {
     });
 
     var update_requests = function() {
+        var priority = $("#req_priority").val();
+        var count = $("#req_count").val();
+
+        if (count === "") count = 10;
+
         filter_data = {
-            priority: $("#req_priority").val(),
-            count: $("#req_count").val()
+            priority: priority,
+            count: count
         }
         $.ajax({
             method: "GET",
