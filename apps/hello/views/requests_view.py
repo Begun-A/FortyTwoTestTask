@@ -24,7 +24,7 @@ class LogRequestView(ListView):
 
         queryset = self.model.objects.order_by('-id')
 
-        priority = request.GET.get('priority', None)
+        priority = request.GET.get('priority', "some_priority")
         count = request.GET.get('count', "10")
         if priority.isdigit():
             queryset = queryset.filter(priority=priority)

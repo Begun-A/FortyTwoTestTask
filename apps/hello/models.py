@@ -38,12 +38,12 @@ class Contact(models.Model):
 
                 if pr > nr:
                     # photo aspect is wider than destination ratio
-                    tw = int(round(nh * pr))
-                    image = image.resize((tw, nh), Image.ANTIALIAS)
-                elif pr < nr:
-                    # photo aspect is taller than destination ratio
                     th = int(round(nw / pr))
                     image = image.resize((nw, th), Image.ANTIALIAS)
+                elif pr < nr:
+                    # photo aspect is taller than destination ratio
+                    tw = int(round(nh * pr))
+                    image = image.resize((tw, nw), Image.ANTIALIAS)
                 else:
                     # photo aspect matches the destination ratio
                     image = image.resize(size, Image.ANTIALIAS)

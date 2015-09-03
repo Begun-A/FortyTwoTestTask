@@ -173,8 +173,8 @@ class EditFormTest(TestCase):
         # round of each.
         img_ratio = contact.photo.width / float(contact.photo.height)
         img_size = (contact.photo.width, contact.photo.height)
-        self.assertTrue(0.99 < init_ratio / float(img_ratio) < 1.01)
-        self.assertEqual(min(img_size[0], img_size[1]), 200)
+        self.assertTrue(0.9 < init_ratio / float(img_ratio) < 1.1)
+        self.assertEqual(max(img_size[0], img_size[1]), 200)
 
     def test_resize_photo_with_ascpect_ration_less_1(self):
         """Check if aspect reatio < 1 and photo will be resized.
