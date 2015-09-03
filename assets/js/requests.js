@@ -31,26 +31,11 @@ $(document).ready(function() {
         }
     });
 
-    setInterval(function() {
-        var prio_count = parseInt($("#prio_count").val()); 
-        var selected_val = $("#update_table").val(); 
-        if (isNaN(prio_count)) {
-            prio_count = false;
-        }
-
-        if (selected_val == "10 requests") {
-            filter_data = {
-                __10__: true,
-                priority: prio_count
-            }
-        } else if (selected_val == "all requests") {
-            filter_data = {
-                __all__: true,
-                priority: prio_count
-            }
-        }
-    }, 0);
     var update_requests = function() {
+        filter_data = {
+            priority: $("#req_priority").val(),
+            count: $("#req_count").val()
+        }
         $.ajax({
             method: "GET",
             url: "/requests/",

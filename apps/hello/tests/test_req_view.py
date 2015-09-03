@@ -49,86 +49,57 @@ class LogRequestTest(TestCase):
             fields_json.append(fields)
         return fields_json
 
-    def check_ajax_10_response_on_request_page(self, pr=0, count=100):
-        for x in xrange(count):
+    def check_ajax_responses_on_request_page(
+        self, m_count, prio=None, req_count=10
+    ):
+        for x in xrange(m_count):
             LogWebRequest(
                 method=random.choice(FAKE_METHODS),
                 status_code=random.choice(FAKE_STATUSES),
                 remote_addr=random.choice(FAKE_ADDRS),
                 path=random.choice(FAKE_PATH_LIST),
-                priority=pr
+                priority=random.randrange(0, 100) if not prio else prio
             ).save()
 
+        if prio:
+            data = dict(priority=prio, count=req_count)
+        else:
+            data = dict(count=req_count)
         # get json info about it
         response = self.client.get(
             path=self.fake_path,
-            data=dict(priority=pr, __10__=True),
+            data=data,
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
         self.assertEqual(response.get('content-type'), 'application/json')
         response_f_cont = LogRequestTest._serialize_queryset(response.content)
-        self.assertLessEqual(len(response_f_cont), 10)
+        self.assertLessEqual(len(response_f_cont), req_count)
 
         # check it with db
-        queryset = self.model.objects.filter(priority=pr).order_by('-id')
+        queryset = self.model.objects.order_by('-id')
+        if prio:
+            queryset = queryset.filter(priority=prio)
+
         query_json = serializers.serialize('json', queryset)
         db_content = LogRequestTest._serialize_queryset(query_json)
-        for x in xrange(count):
-            if x < 10:
+        for x in xrange(m_count):
+            if x < req_count:
                 self.assertIn(db_content[x], response_f_cont)
             else:
                 self.assertNotIn(db_content[x], response_f_cont)
 
     def test_answer_of_10_req_on_page(self):
-        """Check if json of 10 records is ansvered.
-        1) Test with default priority;
-        2) Test with random priority;
+        """Check json if it ansvered.
+        1) Test with default count, all priority;
+        2) Test with random count, random priority;
         """
+        # take models count for generation = 147
+        m_count = 147
         # 1
-        self.check_ajax_10_response_on_request_page(count=53)
+        self.check_ajax_responses_on_request_page(m_count=m_count)
         # 2
-        for x in xrange(10):
-            self.check_ajax_10_response_on_request_page(
-                pr=x,
-                count=random.randrange(1, 100)
-            )
-
-    def check_ajax_all_responses_on_request_page(self, pr=0, count=100):
-        for x in xrange(count):
-            LogWebRequest(
-                method=random.choice(FAKE_METHODS),
-                status_code=random.choice(FAKE_STATUSES),
-                remote_addr=random.choice(FAKE_ADDRS),
-                path=random.choice(FAKE_PATH_LIST),
-                priority=pr
-            ).save()
-
-        # get json info about it
-        response = self.client.get(
-            path=self.fake_path,
-            data=dict(priority=pr, __all__=True),
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        self.check_ajax_responses_on_request_page(
+            m_count=m_count,
+            prio=random.randrange(0, 100),
+            req_count=random.randrange(0, m_count)
         )
-        self.assertEqual(response.get('content-type'), 'application/json')
-        response_f_cont = LogRequestTest._serialize_queryset(response.content)
-
-        # check it with db
-        queryset = self.model.objects.filter(priority=pr).order_by('-id')
-        query_json = serializers.serialize('json', queryset)
-        db_content = LogRequestTest._serialize_queryset(query_json)
-        for x in xrange(count):
-            self.assertIn(db_content[x], response_f_cont)
-
-    def test_answer_of_all_req_on_page(self):
-        """Check if json of all records is ansvered.
-        1) Test with default priority;
-        2) Test with random priority;
-        """
-        # 1
-        self.check_ajax_all_responses_on_request_page(count=53)
-        # 2
-        for x in xrange(10):
-            self.check_ajax_all_responses_on_request_page(
-                pr=x,
-                count=random.randrange(1, 100)
-            )

@@ -22,25 +22,19 @@ class LogRequestView(ListView):
         if not request.is_ajax():
             return super(LogRequestView, self).get(request, *args, **kwargs)
 
+        queryset = self.model.objects.order_by('-id')
+
         try:
-            pr = int(request.GET['priority'])
+            priority = int(request.GET['priority'])
+            queryset = queryset.filter(priority=priority)
         except (ValueError, KeyError):
-            pr = False
+            pass
 
-        if '__all__' in request.GET:
-            if pr:
-                update_q = self.model.objects.filter(
-                    priority=pr
-                ).order_by('-id')
-            else:
-                update_q = self.model.objects.order_by('-id')
-        if '__10__' in request.GET:
-            if pr:
-                update_q = self.model.objects.filter(
-                    priority=pr
-                ).order_by('-id')[:10]
-            else:
-                update_q = self.model.objects.order_by('-id')[:10]
+        try:
+            count = int(request.GET['count'])
+        except (ValueError, KeyError):
+            count = 10
+        queryset = queryset[:count]
 
-        data = json.loads(serializers.serialize('json', update_q))
+        data = json.loads(serializers.serialize('json', queryset))
         return JsonResponse(content=data, status=200)

@@ -190,14 +190,14 @@ class EditFormTest(TestCase):
     def test_resize_photo_with_different_sizes(self):
         """Check if th given photo will be resized to 200x200.
         """
-        # when aspect ration < 1
+        # when aspect ratio < 1
         size = (123, 5823)
         self.make_resize_of_photo(size)
 
-        # when aspect ration > 1
+        # when aspect ratio > 1
         size = (1237, 784)
         self.make_resize_of_photo(size)
 
-        # when aspect ration == 1
+        # when aspect ratio == 1
         size = (761, 761)
         self.make_resize_of_photo(size)
