@@ -145,10 +145,7 @@ class EditFormTest(TestCase):
         photo_color = (255, 0, 0)
         init_ratio = photo_size[0] / float(photo_size[1])
 
-        need_size = (200, 200)
-        need_ratio = need_size[0] / float(need_size[1])
-
-        photo_name = EditFormTest.generate_new_filename(ext)
+        photo_name = self.generate_new_filename(ext)
         photo = EditFormTest.create_test_image(
             name=photo_name,
             color=photo_color,
@@ -176,28 +173,23 @@ class EditFormTest(TestCase):
         # round of each.
         img_ratio = contact.photo.width / float(contact.photo.height)
         img_size = (contact.photo.width, contact.photo.height)
-        self.assertEqual(round(img_ratio, 2), round(init_ratio, 2))
+        self.assertTrue(0.99 < init_ratio / float(img_ratio) < 1.01)
+        self.assertEqual(min(img_size[0], img_size[1]), 200)
 
-        if need_ratio > img_ratio:
-            self.assertEqual(img_size[0], 200)
-
-        elif need_ratio < img_ratio:
-            self.assertEqual(img_size[1], 200)
-
-        else:
-            self.assertEqual(img_size, need_size)
-
-    def test_resize_photo_with_different_sizes(self):
-        """Check if th given photo will be resized to 200x200.
+    def test_resize_photo_with_ascpect_ration_less_1(self):
+        """Check if aspect reatio < 1 and photo will be resized.
         """
-        # when aspect ratio < 1
         size = (123, 5823)
         self.make_resize_of_photo(size)
 
-        # when aspect ratio > 1
+    def test_resize_photo_with_ascpect_ration_greater_1(self):
+        """Check if aspect reatio > 1 and photo will be resized.
+        """
         size = (1237, 784)
         self.make_resize_of_photo(size)
 
-        # when aspect ratio == 1
+    def test_resize_photo_with_ascpect_ration_equal_1(self):
+        """Check if aspect reatio == 1 and photo will be resized.
+        """
         size = (761, 761)
         self.make_resize_of_photo(size)
